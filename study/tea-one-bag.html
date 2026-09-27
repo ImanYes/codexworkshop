@@ -1,0 +1,546 @@
+<title>Чай из одного пакетика</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Literata:ital,opsz,wght@0,7..72,500;0,7..72,650;1,7..72,400&family=Noto+Sans+Math&display=swap">
+<style>
+:root {
+  --bg: #fbfcfd;
+  --panel: #f1f4f8;
+  --ink: #172030;
+  --ink-2: #3d4758;
+  --muted: #6a7384;
+  --rule: #dde3ea;
+  --grid: #e7ebf0;
+  --accent: #2a56a0;
+  --tea: #eb6834;
+  --kettle: #2a78d6;
+  --band: rgba(42, 86, 160, 0.07);
+  --serif: "Literata", "PT Serif", Georgia, serif;
+  --sans: "Golos Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --math: "STIX Two Math", "Cambria Math", "Latin Modern Math", "Noto Sans Math", math;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #131820;
+    --panel: #1a212c;
+    --ink: #e7ebf1;
+    --ink-2: #c3cad6;
+    --muted: #97a1b2;
+    --rule: #2a3342;
+    --grid: #232b38;
+    --accent: #8fb0ea;
+    --tea: #d95926;
+    --kettle: #3987e5;
+    --band: rgba(143, 176, 234, 0.08);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #131820;
+  --panel: #1a212c;
+  --ink: #e7ebf1;
+  --ink-2: #c3cad6;
+  --muted: #97a1b2;
+  --rule: #2a3342;
+  --grid: #232b38;
+  --accent: #8fb0ea;
+  --tea: #d95926;
+  --kettle: #3987e5;
+  --band: rgba(143, 176, 234, 0.08);
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16.5px;
+  line-height: 1.6;
+  padding-inline: 20px;
+  padding-block: 40px 80px;
+}
+.page { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px; }
+section { display: flex; flex-direction: column; gap: 18px; }
+h1, h2, h3 { font-family: var(--serif); text-wrap: balance; margin: 0; color: var(--ink); }
+h1 { font-size: clamp(34px, 6vw, 48px); line-height: 1.08; font-weight: 650; letter-spacing: -0.01em; }
+h2 { font-size: 28px; line-height: 1.2; font-weight: 650; }
+h3 { font-size: 20px; line-height: 1.3; font-weight: 500; }
+p { margin: 0; max-width: 66ch; }
+a { color: var(--accent); text-underline-offset: 3px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 3px; }
+.eyebrow { font-family: var(--mono); font-size: 12.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.lede { font-size: 18.5px; color: var(--ink-2); }
+.muted { color: var(--muted); }
+var, .v { font-family: var(--serif); font-style: italic; font-weight: 400; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* header */
+header { display: flex; flex-direction: column; gap: 16px; }
+.setup { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.setup span { font-family: var(--mono); font-size: 13px; padding: 5px 10px; border: 1px solid var(--rule); border-radius: 999px; color: var(--ink-2); background: var(--bg); }
+
+/* plan */
+.plan { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; border-top: 1px solid var(--rule); }
+.plan li { display: grid; grid-template-columns: 7.5rem 1fr; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--rule); }
+.plan time { font-family: var(--mono); font-size: 14px; color: var(--accent); padding-top: 2px; font-variant-numeric: tabular-nums; }
+.plan b { font-weight: 600; }
+.plan p { color: var(--ink-2); }
+.plan p b { color: var(--ink); }
+@media (max-width: 520px) { .plan li { grid-template-columns: 1fr; gap: 4px; } }
+
+.result { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; }
+.result div { background: var(--bg); padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; }
+.result strong { font-size: 24px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.2; }
+.result span { font-size: 13.5px; color: var(--muted); }
+@media (max-width: 620px) { .result { grid-template-columns: repeat(2, 1fr); } }
+
+.note { background: var(--panel); border-radius: 10px; padding: 18px 20px; display: flex; flex-direction: column; gap: 8px; }
+.note h3 { font-size: 18px; }
+.note p { color: var(--ink-2); }
+
+.rules { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.rules div { border: 1px solid var(--rule); border-radius: 10px; padding: 16px 18px; display: flex; flex-direction: column; gap: 6px; }
+.rules .big { font-family: var(--serif); font-size: 24px; font-weight: 500; color: var(--ink); }
+.rules p { font-size: 15px; color: var(--ink-2); }
+@media (max-width: 620px) { .rules { grid-template-columns: 1fr; } }
+
+/* tables */
+.tbl { overflow-x: auto; border: 1px solid var(--rule); border-radius: 10px; }
+table { border-collapse: collapse; width: 100%; font-size: 15px; }
+th, td { text-align: left; padding: 9px 14px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+th { font-weight: 500; color: var(--muted); font-size: 13px; letter-spacing: 0.02em; background: var(--panel); }
+td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+td .v { white-space: nowrap; }
+tr.stop td { border-top: 2px solid var(--accent); }
+details { border: 1px solid var(--rule); border-radius: 10px; }
+details summary { cursor: pointer; padding: 12px 16px; font-weight: 500; }
+details .tbl { border: 0; border-top: 1px solid var(--rule); border-radius: 0; }
+
+/* charts */
+.chart { display: flex; flex-direction: column; gap: 8px; }
+.chart-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 16px; }
+.chart-title { font-weight: 600; font-size: 15.5px; }
+.legend { display: flex; gap: 16px; font-size: 13.5px; color: var(--ink-2); }
+.legend i { display: inline-block; width: 16px; height: 2px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+.plot { position: relative; }
+.plot svg { display: block; width: 100%; height: auto; overflow: visible; }
+.plot text { font-family: var(--sans); font-size: 12px; fill: var(--muted); }
+.plot .lbl { fill: var(--ink-2); font-size: 12.5px; }
+.tip { position: absolute; pointer-events: none; background: var(--bg); border: 1px solid var(--rule); border-radius: 8px; padding: 8px 10px; font-size: 13px; line-height: 1.45; box-shadow: 0 4px 16px rgba(0,0,0,0.08); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.tip i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+.caption { font-size: 14px; color: var(--muted); }
+
+/* math */
+math { font-family: var(--math); font-size: 1.12em; }
+.eq { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px; padding: 4px 0; }
+.eq .f { overflow-x: auto; overflow-y: hidden; padding: 6px 2px; }
+.eq .f .katex { display: block; }
+.eq .no { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+.proof { border-left: 2px solid var(--rule); padding-left: 18px; display: flex; flex-direction: column; gap: 12px; }
+.proof h3 .tag { font-family: var(--mono); font-size: 13px; color: var(--accent); margin-right: 8px; letter-spacing: 0.04em; }
+.qed { color: var(--muted); font-size: 14px; }
+.sources { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; font-size: 15px; }
+hr { border: 0; border-top: 1px solid var(--rule); margin: 0; width: 100%; }
+</style>
+
+<div class="page">
+
+<header>
+  <div class="eyebrow">Задача про чай · план и доказательства</div>
+  <h1>Чай из одного пакетика</h1>
+  <p class="lede">Кружка на 200 мл. Чайник на 1,5 л только что вскипел, и кипяток сразу залили в кружку до краёв. Каждые 2 минуты ты делаешь глоток в 20 мл, это 10% кружки. Как доливать, чтобы выпить больше и не потерять вкус. Сначала готовый план, ниже модель и доказательства.</p>
+  <div class="setup">
+    <span>кружка 200 мл</span><span>пакетик 2 г</span><span>чайник 1,5 л, не подогревается</span><span>глоток 20 мл / 2 мин</span><span>комната 22 °C</span><span>«уже не чай» 0,5 г/л</span>
+  </div>
+</header>
+
+<section id="plan">
+  <h2>Как пить</h2>
+  <ol class="plan">
+    <li><time>0:00</time><p><b>Положи пакетик и залей кипяток до краёв.</b> Закрой крышку чайника: в нём осталось 1,3 л, и с этой минуты он остывает.</p></li>
+    <li><time>0:00–10:00</time><p><b>Не пей.</b> Чай остывает с 86 до 67 °C. Пакетик за это время отдаёт около 98% вкуса, крепость доходит до 3,9 г/л.</p></li>
+    <li><time>10:00, 12:00</time><p><b>Два глотка без долива.</b> Чай за это время остывает до комфортных 60 °C.</p></li>
+    <li><time>14:00</time><p><b>После глотка долей до краёв</b>, это около 60 мл. Вода в чайнике ещё около 85 °C.</p></li>
+    <li><time>16:00–40:00</time><p><b>После каждого глотка доливай до краёв</b>, по 20 мл. Вместе с шагом на 14:00 получится 14 доливов. Чай держится на 50–63 °C.</p></li>
+    <li><time>42:00–60:00</time><p><b>Больше не доливай и допей кружку</b>: это 10 глотков. Крепость остаётся 0,73 г/л, чай остывает с 50 до 30 °C.</p></li>
+  </ol>
+
+  <div class="result">
+    <div><strong>520 мл</strong><span>выпито, 2,6 кружки</span></div>
+    <div><strong>320 мл</strong><span>ушло из чайника</span></div>
+    <div><strong>3,9 → 0,73</strong><span>крепость, г/л</span></div>
+    <div><strong>≈ 60 мин</strong><span>всё чаепитие</span></div>
+  </div>
+
+  <div class="rules">
+    <div><span class="eyebrow">Когда перестать доливать ради вкуса</span><span class="big">C* = e · C₀ ≈ 1,36 г/л</span><p>Если важен только вкус, доливать выгодно, пока чай крепче <var>e</var> ≈ 2,72 порогов. Если учитывать ещё и температуру, выгодно доливать дольше, примерно до 0,7 г/л: тёплый слабый глоток приятнее холодного крепкого.</p></div>
+    <div><span class="eyebrow">Когда чайник перестаёт греть</span><span class="big">T<sub>w</sub> ≈ 89 °C</span><p>Если вода в чайнике холоднее, то даже долив до краёв уже не удержит чай на 60 °C. В этом плане чайник остывает до 89 °C примерно к 10-й минуте, поэтому чай постепенно остывает.</p></div>
+  </div>
+
+  <div class="note">
+    <h3>Если чайник можно подогреть</h3>
+    <p>Подогревай его перед доливом или держи воду в термопоте на 100 °C. Тогда с 14-й минуты после каждого глотка доливай <b>около 17 мл кипятка</b>, чуть меньше глотка. Получится 18 доливов. Чай держится на 60 °C почти до 50-й минуты. Выпито около 505 мл, а удовольствие <var>J<sub>T</sub></var> выше на 24%.</p>
+  </div>
+
+  <h3>Если пьёшь в другом темпе</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Глоток раз в</th><th>Первый глоток</th><th>Доливы до краёв</th><th class="n">Выпито</th><th>Что с температурой</th></tr></thead>
+      <tbody>
+        <tr><td>1 мин</td><td>на 12-й минуте</td><td>после каждого из первых 12 глотков</td><td class="n">440 мл за 33 мин</td><td>чайник ещё горячий, чай держится около 63 °C</td></tr>
+        <tr><td>2 мин</td><td>на 10-й минуте</td><td>2 глотка без долива, потом 14 доливов</td><td class="n">520 мл за 60 мин</td><td>основной план выше</td></tr>
+        <tr><td>3 мин</td><td>на 10-й минуте</td><td>2 глотка без долива, потом 16 доливов</td><td class="n">560 мл за 91 мин</td><td>чайник остывает, к концу доливов чай около 40 °C, лучше подогревать</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="charts">
+  <h2>Что происходит в кружке</h2>
+  <div class="chart">
+    <div class="chart-head">
+      <span class="chart-title">Температура, °C</span>
+      <span class="legend"><span><i style="background: var(--tea)"></i>чай в кружке</span><span><i style="background: var(--kettle)"></i>вода в чайнике</span></span>
+    </div>
+    <div class="plot" id="plotT"></div>
+    <span class="caption">Полоса — зона комфорта 60 ± 8 °C. Зубцы на линии чая — моменты долива.</span>
+  </div>
+  <div class="chart">
+    <div class="chart-head">
+      <span class="chart-title">Крепость чая, г/л</span>
+    </div>
+    <div class="plot" id="plotC"></div>
+    <span class="caption">Первые 10 минут пакетик отдаёт вкус. Потом каждый долив разбавляет чай, а после 42-й минуты крепость больше не меняется.</span>
+  </div>
+  <details>
+    <summary>Таблица: глоток за глотком</summary>
+    <div class="tbl">
+      <table>
+        <thead><tr><th class="n">Минута</th><th class="n">Крепость, г/л</th><th class="n">Чай, °C</th><th class="n">Долив, мл</th><th class="n">Чайник, °C</th></tr></thead>
+        <tbody id="sipRows"></tbody>
+      </table>
+    </div>
+  </details>
+</section>
+
+<hr>
+
+<section id="model">
+  <div class="eyebrow">Часть 2</div>
+  <h2>Математическая модель</h2>
+  <p>Модель описывает четыре величины, которые меняются во времени. Между глотками они меняются плавно, по дифференциальным уравнениям. В момент глотка и долива они меняются скачком.</p>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Величина</th><th>Что это</th><th>Единицы</th></tr></thead>
+      <tbody>
+        <tr><td><span class="v">V<sub>m</sub>(t)</span></td><td>сколько чая в кружке</td><td>мл</td></tr>
+        <tr><td><span class="v">m(t)</span></td><td>сколько вещества растворено в кружке</td><td>г</td></tr>
+        <tr><td><span class="v">b(t)</span></td><td>сколько вещества ещё в пакетике</td><td>г</td></tr>
+        <tr><td><span class="v">T(t)</span></td><td>температура чая</td><td>°C</td></tr>
+        <tr><td><span class="v">C</span> = 1000·<span class="v">m</span>/<span class="v">V<sub>m</sub></span></td><td>крепость (концентрация)</td><td>г/л</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Параметры</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Символ</th><th>Что это</th><th class="n">Значение</th><th>Откуда</th></tr></thead>
+      <tbody>
+        <tr><td><span class="v">V</span></td><td>объём кружки</td><td class="n">200 мл</td><td>условие</td></tr>
+        <tr><td><span class="v">s</span></td><td>глоток, 0,1·<span class="v">V</span></td><td class="n">20 мл</td><td>условие</td></tr>
+        <tr><td><span class="v">τ</span></td><td>пауза между глотками</td><td class="n">2 мин</td><td>условие</td></tr>
+        <tr><td><span class="v">M</span></td><td>растворимое вещество в пакетике</td><td class="n">0,8 г</td><td>пакетик 1,6–2 г, растворимых веществ в чае 30–45%</td></tr>
+        <tr><td><span class="v">k</span><sub>80</sub></td><td>скорость экстракции (выхода вещества в воду) при 80 °C</td><td class="n">0,5 мин⁻¹</td><td>оценка. Для кофеина измерено около 1 мин⁻¹, в пакетике на 29% медленнее, вещества цвета и вкуса выходят ещё медленнее. Проверка: пакетик на 200 мл за 2,5 мин даёт около 3 г/л, как в замерах</td></tr>
+        <tr><td><span class="v">E<sub>a</sub></span></td><td>энергия активации: насколько экстракция зависит от температуры</td><td class="n">40 кДж/моль</td><td>измерено для чёрного чая</td></tr>
+        <tr><td><span class="v">v<sub>b</sub></span></td><td>жидкость внутри пакетика</td><td class="n">≈ 5 мл</td><td>оценка, влияет слабо</td></tr>
+        <tr><td><span class="v">h</span></td><td>скорость остывания полной кружки</td><td class="n">0,035 мин⁻¹</td><td>0,03 для кружки 300 мл (остывает до питьевой температуры за ~15 мин), пересчитано на меньшую кружку</td></tr>
+        <tr><td><span class="v">V<sub>eq</sub></span></td><td>теплоёмкость самой кружки, пересчитанная в мл воды</td><td class="n">≈ 45 мл</td><td>около 220 г керамики</td></tr>
+        <tr><td><span class="v">h<sub>k</sub></span></td><td>скорость остывания чайника с закрытой крышкой</td><td class="n">0,015 мин⁻¹</td><td>оценка: за первые 15 минут вода теряет около 15 °C</td></tr>
+        <tr><td><span class="v">T<sub>a</sub></span></td><td>комната</td><td class="n">22 °C</td><td></td></tr>
+        <tr><td><span class="v">T</span><sub>0</sub></td><td>температура сразу после заливки</td><td class="n">85,7 °C</td><td>кипяток греет холодную кружку: (200·100 + 45·22)/245</td></tr>
+        <tr><td><span class="v">C</span><sub>0</sub></td><td>порог «это уже не чай»</td><td class="n">0,5 г/л</td><td>личный параметр; обычная заварка около 3 г/л</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Между глотками</h3>
+  <p>Пакетик отдаёт вещество, пока внутри него чай крепче, чем снаружи. Сколько ушло из пакетика, столько пришло в кружку.</p>
+  <div class="eq"><div class="f"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mrow><mi>d</mi><mi>b</mi></mrow><mrow><mi>d</mi><mi>t</mi></mrow></mfrac><mo>=</mo><mo>−</mo><mtext> </mtext><mi>k</mi><mo stretchy="false">(</mo><mi>T</mi><mo stretchy="false">)</mo><mrow><mo fence="true">(</mo><mi>b</mi><mo>−</mo><mfrac><mrow><msub><mi>v</mi><mi>b</mi></msub><mtext> </mtext><mi>C</mi></mrow><mn>1000</mn></mfrac><mo fence="true">)</mo></mrow></mrow><annotation encoding="application/x-tex">\frac{db}{dt} = -\,k(T)\left(b - \frac{v_b\,C}{1000}\right)</annotation></semantics></math></span></div><span class="no">(1)</span></div>
+  <div class="eq"><div class="f"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mrow><mi>d</mi><mi>m</mi></mrow><mrow><mi>d</mi><mi>t</mi></mrow></mfrac><mo>=</mo><mo>−</mo><mtext> </mtext><mfrac><mrow><mi>d</mi><mi>b</mi></mrow><mrow><mi>d</mi><mi>t</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">\frac{dm}{dt} = -\,\frac{db}{dt}</annotation></semantics></math></span></div><span class="no">(2)</span></div>
+  <p>Скорость экстракции зависит от температуры по закону Аррениуса: чем горячее, тем быстрее.</p>
+  <div class="eq"><div class="f"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>k</mi><mo stretchy="false">(</mo><mi>T</mi><mo stretchy="false">)</mo><mo>=</mo><msub><mi>k</mi><mn>80</mn></msub><mtext> </mtext><mi>exp</mi><mo>⁡</mo><mtext> ⁣</mtext><mrow><mo fence="true">[</mo><mo>−</mo><mfrac><msub><mi>E</mi><mi>a</mi></msub><mi>R</mi></mfrac><mrow><mo fence="true">(</mo><mfrac><mn>1</mn><mrow><mi>T</mi><mo>+</mo><mn>273</mn></mrow></mfrac><mo>−</mo><mfrac><mn>1</mn><mn>353</mn></mfrac><mo fence="true">)</mo></mrow><mo fence="true">]</mo></mrow></mrow><annotation encoding="application/x-tex">k(T) = k_{80}\,\exp\!\left[-\frac{E_a}{R}\left(\frac{1}{T+273} - \frac{1}{353}\right)\right]</annotation></semantics></math></span></div><span class="no">(3)</span></div>
+  <p>Остывание описывает закон Ньютона: чем горячее чай относительно комнаты, тем быстрее он остывает. Почти пустая кружка остывает быстрее полной: воды меньше, а поверхность та же. Чайник остывает по тому же закону.</p>
+  <div class="eq"><div class="f"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mrow><mi>d</mi><mi>T</mi></mrow><mrow><mi>d</mi><mi>t</mi></mrow></mfrac><mo>=</mo><mo>−</mo><mtext> </mtext><mi>h</mi><mtext> </mtext><mfrac><mrow><mi>V</mi><mo>+</mo><msub><mi>V</mi><mrow><mi>e</mi><mi>q</mi></mrow></msub></mrow><mrow><msub><mi>V</mi><mi>m</mi></msub><mo>+</mo><msub><mi>V</mi><mrow><mi>e</mi><mi>q</mi></mrow></msub></mrow></mfrac><mtext> </mtext><mo fence="true" stretchy="true" minsize="1.2em" maxsize="1.2em">(</mo><mi>T</mi><mo>−</mo><msub><mi>T</mi><mi>a</mi></msub><mo fence="true" stretchy="true" minsize="1.2em" maxsize="1.2em">)</mo></mrow><annotation encoding="application/x-tex">\frac{dT}{dt} = -\,h\,\frac{V+V_{eq}}{V_m+V_{eq}}\,\bigl(T - T_a\bigr)</annotation></semantics></math></span></div><span class="no">(4)</span></div>
+  <div class="eq"><div class="f"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>T</mi><mi>k</mi></msub><mo stretchy="false">(</mo><mi>t</mi><mo stretchy="false">)</mo><mo>=</mo><msub><mi>T</mi><mi>a</mi></msub><mo>+</mo><mo stretchy="false">(</mo><mn>100</mn><mo>−</mo><msub><mi>T</mi><mi>a</mi></msub><mo stretchy="false">)</mo><mtext> </mtext><msup><mi>e</mi><mrow><mo>−</mo><msub><mi>h</mi><mi>k</mi></msub><mi>t</mi></mrow></msup></mrow><annotation encoding="application/x-tex">T_k(t) = T_a + (100 - T_a)\,e^{-h_k t}</annotation></semantics></math></span></div><span class="no">(4′)</span></div>
+
+  <h3>В момент глотка</h3>
+  <p>Каждые <span class="v">τ</span> минут, начиная с <span class="v">t</span><sub>0</sub>, ты отпиваешь <span class="v">s</span> мл, а потом доливаешь <span class="v">w<sub>i</sub></span> мл из чайника. При доливе смешиваются чай, кружка и горячая вода.</p>
+  <div class="eq"><div class="f"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>C</mi><mi>i</mi></msub><mo>=</mo><mi>C</mi><mo stretchy="false">(</mo><msub><mi>t</mi><mi>i</mi></msub><mo stretchy="false">)</mo><mo separator="true">,</mo><mspace width="1em"/><msub><mi>T</mi><mi>i</mi></msub><mo>=</mo><mi>T</mi><mo stretchy="false">(</mo><msub><mi>t</mi><mi>i</mi></msub><mo stretchy="false">)</mo><mo separator="true">,</mo><mspace width="2em"/><mi>m</mi><mo>←</mo><mi>m</mi><mrow><mo fence="true">(</mo><mn>1</mn><mo>−</mo><mfrac><mi>s</mi><msub><mi>V</mi><mi>m</mi></msub></mfrac><mo fence="true">)</mo></mrow><mo separator="true">,</mo><mspace width="1em"/><msub><mi>V</mi><mi>m</mi></msub><mo>←</mo><msub><mi>V</mi><mi>m</mi></msub><mo>−</mo><mi>s</mi></mrow><annotation encoding="application/x-tex">C_i = C(t_i),\quad T_i = T(t_i),\qquad m \leftarrow m\left(1-\frac{s}{V_m}\right),\quad V_m \leftarrow V_m - s</annotation></semantics></math></span></div><span class="no">(5)</span></div>
+  <div class="eq"><div class="f"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>T</mi><mo>←</mo><mfrac><mrow><mo stretchy="false">(</mo><msub><mi>V</mi><mi>m</mi></msub><mo>+</mo><msub><mi>V</mi><mrow><mi>e</mi><mi>q</mi></mrow></msub><mo stretchy="false">)</mo><mtext> </mtext><mi>T</mi><mo>+</mo><msub><mi>w</mi><mi>i</mi></msub><mtext> </mtext><msub><mi>T</mi><mi>k</mi></msub><mo stretchy="false">(</mo><msub><mi>t</mi><mi>i</mi></msub><mo stretchy="false">)</mo></mrow><mrow><msub><mi>V</mi><mi>m</mi></msub><mo>+</mo><msub><mi>V</mi><mrow><mi>e</mi><mi>q</mi></mrow></msub><mo>+</mo><msub><mi>w</mi><mi>i</mi></msub></mrow></mfrac><mo separator="true">,</mo><mspace width="2em"/><msub><mi>V</mi><mi>m</mi></msub><mo>←</mo><msub><mi>V</mi><mi>m</mi></msub><mo>+</mo><msub><mi>w</mi><mi>i</mi></msub><mo separator="true">,</mo><mspace width="2em"/><mn>0</mn><mo>≤</mo><msub><mi>w</mi><mi>i</mi></msub><mo>≤</mo><mi>V</mi><mo>−</mo><msub><mi>V</mi><mi>m</mi></msub></mrow><annotation encoding="application/x-tex">T \leftarrow \frac{(V_m+V_{eq})\,T + w_i\,T_k(t_i)}{V_m+V_{eq}+w_i},\qquad V_m \leftarrow V_m + w_i,\qquad 0 \le w_i \le V - V_m</annotation></semantics></math></span></div><span class="no">(6)</span></div>
+  <p>Управлять можно только двумя вещами: сколько доливать (<span class="v">w<sub>i</sub></span>) и когда начать пить (<span class="v">t</span><sub>0</sub>).</p>
+
+  <h3>Что максимизируем</h3>
+  <p>Интуиция «объём × крепость» не работает. Из уравнений (1)–(6) следует закон сохранения: всё, что вышло из пакетика, либо выпито, либо осталось.</p>
+  <div class="eq"><div class="f"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><munder><mo>∑</mo><mi>i</mi></munder><mi>s</mi><mtext> </mtext><msub><mi>C</mi><mi>i</mi></msub><mtext>  </mtext><mo>+</mo><mtext>  </mtext><msub><mi>m</mi><mtext>кон</mtext></msub><mtext>  </mtext><mo>+</mo><mtext>  </mtext><msub><mi>b</mi><mtext>кон</mtext></msub><mtext>  </mtext><mo>=</mo><mtext>  </mtext><mi>M</mi><mspace width="1em"/><mo>⟹</mo><mspace width="1em"/><mi>W</mi><mo>⋅</mo><mover accent="true"><mi>C</mi><mo>ˉ</mo></mover><mo>≈</mo><mi>M</mi></mrow><annotation encoding="application/x-tex">\sum_i s\,C_i \;+\; m_{\text{кон}} \;+\; b_{\text{кон}} \;=\; M \quad\Longrightarrow\quad W\cdot\bar C \approx M</annotation></semantics></math></span></div><span class="no">(7)</span></div>
+  <p>Произведение выпитого объёма <span class="v">W</span> на среднюю крепость одинаково при любой стратегии. Поэтому нужна функция вкуса. Беру закон Вебера–Фехнера из психологии восприятия: ощущение растёт как логарифм концентрации. Слабее порога — просто вода.</p>
+  <div class="eq"><div class="f"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>u</mi><mo stretchy="false">(</mo><mi>C</mi><mo stretchy="false">)</mo><mo>=</mo><mi>max</mi><mo>⁡</mo><mtext> ⁣</mtext><mrow><mo fence="true">(</mo><mn>0</mn><mo separator="true">,</mo><mtext>  </mtext><mi>ln</mi><mo>⁡</mo><mfrac><mi>C</mi><msub><mi>C</mi><mn>0</mn></msub></mfrac><mo fence="true">)</mo></mrow></mrow><annotation encoding="application/x-tex">u(C) = \max\!\left(0,\; \ln\frac{C}{C_0}\right)</annotation></semantics></math></span></div><span class="no">(8)</span></div>
+  <div class="eq"><div class="f"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>J</mi><mo>=</mo><munder><mo>∑</mo><mi>i</mi></munder><mi>s</mi><mtext> </mtext><mi>u</mi><mo stretchy="false">(</mo><msub><mi>C</mi><mi>i</mi></msub><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">J = \sum_i s\,u(C_i)</annotation></semantics></math></span></div><span class="no">(9)</span></div>
+  <p><span class="v">J</span> измеряется в «литрах идеального чая», потому что <span class="v">u</span>(<span class="v">e</span>·<span class="v">C</span><sub>0</sub>) = 1. Если учитывать температуру, каждый глоток умножаем на комфорт. В исследованиях люди в среднем предпочитают горячие напитки при 60 ± 8 °C.</p>
+  <div class="eq"><div class="f"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>J</mi><mi>T</mi></msub><mo>=</mo><munder><mo>∑</mo><mi>i</mi></munder><mi>s</mi><mtext> </mtext><mi>u</mi><mo stretchy="false">(</mo><msub><mi>C</mi><mi>i</mi></msub><mo stretchy="false">)</mo><mtext> </mtext><mi>exp</mi><mo>⁡</mo><mtext> ⁣</mtext><mrow><mo fence="true">(</mo><mo>−</mo><mfrac><mrow><mo stretchy="false">(</mo><msub><mi>T</mi><mi>i</mi></msub><mo>−</mo><mn>60</mn><msup><mo stretchy="false">)</mo><mn>2</mn></msup></mrow><mrow><mn>2</mn><mo>⋅</mo><mn>8.</mn><msup><mn>3</mn><mn>2</mn></msup></mrow></mfrac><mo fence="true">)</mo></mrow></mrow><annotation encoding="application/x-tex">J_T = \sum_i s\,u(C_i)\,\exp\!\left(-\frac{(T_i-60)^2}{2\cdot 8.3^2}\right)</annotation></semantics></math></span></div><span class="no">(10)</span></div>
+</section>
+
+<section id="proofs">
+  <div class="eyebrow">Часть 3</div>
+  <h2>Доказательства</h2>
+
+  <div class="proof">
+    <h3><span class="tag">Т1</span>Потолок: сколько удовольствия может дать один пакетик</h3>
+    <p>Грамм вещества, выпитый при крепости <span class="v">C</span>, даёт <span class="v">u</span>(<span class="v">C</span>)/<span class="v">C</span> удовольствия. Найдём, при какой крепости это максимально:</p>
+    <div class="eq"><div class="f"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mrow><mi>u</mi><mo stretchy="false">(</mo><mi>C</mi><mo stretchy="false">)</mo></mrow><mi>C</mi></mfrac><mo>=</mo><mfrac><mrow><mi>ln</mi><mo>⁡</mo><mo stretchy="false">(</mo><mi>C</mi><mi mathvariant="normal">/</mi><msub><mi>C</mi><mn>0</mn></msub><mo stretchy="false">)</mo></mrow><mi>C</mi></mfrac><mo separator="true">,</mo><mspace width="2em"/><mfrac><mi>d</mi><mrow><mi>d</mi><mi>C</mi></mrow></mfrac><mtext> </mtext><mfrac><mrow><mi>ln</mi><mo>⁡</mo><mo stretchy="false">(</mo><mi>C</mi><mi mathvariant="normal">/</mi><msub><mi>C</mi><mn>0</mn></msub><mo stretchy="false">)</mo></mrow><mi>C</mi></mfrac><mo>=</mo><mfrac><mrow><mn>1</mn><mo>−</mo><mi>ln</mi><mo>⁡</mo><mo stretchy="false">(</mo><mi>C</mi><mi mathvariant="normal">/</mi><msub><mi>C</mi><mn>0</mn></msub><mo stretchy="false">)</mo></mrow><msup><mi>C</mi><mn>2</mn></msup></mfrac><mo>=</mo><mn>0</mn><mtext>  </mtext><mo>⟹</mo><mtext>  </mtext><msup><mi>C</mi><mo>∗</mo></msup><mo>=</mo><mi>e</mi><mtext> </mtext><msub><mi>C</mi><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">\frac{u(C)}{C} = \frac{\ln(C/C_0)}{C},\qquad \frac{d}{dC}\,\frac{\ln(C/C_0)}{C} = \frac{1-\ln(C/C_0)}{C^2} = 0 \;\Longrightarrow\; C^* = e\,C_0</annotation></semantics></math></span></div><span class="no">(11)</span></div>
+    <p>Разложим <span class="v">J</span> по граммам и оценим каждый грамм сверху:</p>
+    <div class="eq"><div class="f"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>J</mi><mo>=</mo><munder><mo>∑</mo><mi>i</mi></munder><mo fence="true" stretchy="true" minsize="1.2em" maxsize="1.2em">(</mo><mi>s</mi><mtext> </mtext><msub><mi>C</mi><mi>i</mi></msub><mo fence="true" stretchy="true" minsize="1.2em" maxsize="1.2em">)</mo><mo>⋅</mo><mfrac><mrow><mi>u</mi><mo stretchy="false">(</mo><msub><mi>C</mi><mi>i</mi></msub><mo stretchy="false">)</mo></mrow><msub><mi>C</mi><mi>i</mi></msub></mfrac><mtext>  </mtext><mo>≤</mo><mtext>  </mtext><mi>M</mi><mo>⋅</mo><munder><mrow><mi>max</mi><mo>⁡</mo></mrow><mi>C</mi></munder><mfrac><mrow><mi>u</mi><mo stretchy="false">(</mo><mi>C</mi><mo stretchy="false">)</mo></mrow><mi>C</mi></mfrac><mtext>  </mtext><mo>=</mo><mtext>  </mtext><mfrac><mi>M</mi><mrow><mi>e</mi><mtext> </mtext><msub><mi>C</mi><mn>0</mn></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">J = \sum_i \bigl(s\,C_i\bigr)\cdot\frac{u(C_i)}{C_i} \;\le\; M\cdot\max_C\frac{u(C)}{C} \;=\; \frac{M}{e\,C_0}</annotation></semantics></math></span></div><span class="no">(12)</span></div>
+    <p>Равенство достигается только тогда, когда каждый глоток ровно идеальной крепости и пакетик отдал всё. Для нашего пакетика:</p>
+    <div class="eq"><div class="f"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msup><mi>C</mi><mo>∗</mo></msup><mo>=</mo><mi>e</mi><mo>⋅</mo><mn>0.5</mn><mo>≈</mo><mn>1.36</mn><mtext> г/л</mtext><mo separator="true">,</mo><mspace width="2em"/><msup><mi>J</mi><mo>∗</mo></msup><mo>=</mo><mfrac><mn>0.8</mn><mrow><mi>e</mi><mo>⋅</mo><mn>0.5</mn></mrow></mfrac><mo>≈</mo><mn>0.59</mn><mo separator="true">,</mo><mspace width="2em"/><msup><mi>W</mi><mo>∗</mo></msup><mo>≈</mo><mn>590</mn><mtext> мл</mtext></mrow><annotation encoding="application/x-tex">C^* = e\cdot 0.5 \approx 1.36\ \text{г/л},\qquad J^* = \frac{0.8}{e\cdot 0.5} \approx 0.59,\qquad W^* \approx 590\ \text{мл}</annotation></semantics></math></span></div><span class="no">(13)</span></div>
+    <p class="qed">Никакая стратегия долива не даст больше 0,59.</p>
+  </div>
+
+  <div class="proof">
+    <h3><span class="tag">Т2</span>Когда перестать доливать</h3>
+    <p>Кружка полна, крепость <span class="v">C</span>. Сравним «долить ещё раз» с «перестать и допить». Лишний долив даёт ещё один глоток, но делает слабее всю оставшуюся кружку. Итоговая выгода:</p>
+    <div class="eq"><div class="f"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi mathvariant="normal">Δ</mi><mi>J</mi><mo>=</mo><mi>s</mi><mtext> </mtext><mo fence="true" stretchy="true" minsize="1.2em" maxsize="1.2em">(</mo><mi>u</mi><mo stretchy="false">(</mo><mi>C</mi><mo stretchy="false">)</mo><mo>−</mo><mi>C</mi><mtext> </mtext><msup><mi>u</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo stretchy="false">(</mo><mi>C</mi><mo stretchy="false">)</mo><mo fence="true" stretchy="true" minsize="1.2em" maxsize="1.2em">)</mo><mo>=</mo><mi>s</mi><mrow><mo fence="true">(</mo><mi>ln</mi><mo>⁡</mo><mfrac><mi>C</mi><msub><mi>C</mi><mn>0</mn></msub></mfrac><mo>−</mo><mn>1</mn><mo fence="true">)</mo></mrow><mo>&gt;</mo><mn>0</mn><mspace width="1em"/><mo>⟺</mo><mspace width="1em"/><mi>C</mi><mo>&gt;</mo><mi>e</mi><mtext> </mtext><msub><mi>C</mi><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">\Delta J = s\,\bigl(u(C) - C\,u&#x27;(C)\bigr) = s\left(\ln\frac{C}{C_0} - 1\right) &gt; 0 \quad\Longleftrightarrow\quad C &gt; e\,C_0</annotation></semantics></math></span></div><span class="no">(14)</span></div>
+    <p>Выходит оптимальная стратегия из трёх фаз:</p>
+    <p>1) пока <span class="v">C</span> &gt; <span class="v">C</span>*, доливай до краёв после каждого глотка;<br>2) когда <span class="v">C</span> = <span class="v">C</span>*, доливай ровно столько, сколько вещества добавил пакетик:</p>
+    <div class="eq"><div class="f"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>w</mi><mi>i</mi></msub><mo>=</mo><mfrac><mrow><mn>1000</mn><mtext> </mtext><mi mathvariant="normal">Δ</mi><msub><mi>m</mi><mi>i</mi></msub></mrow><msup><mi>C</mi><mo>∗</mo></msup></mfrac></mrow><annotation encoding="application/x-tex">w_i = \frac{1000\,\Delta m_i}{C^*}</annotation></semantics></math></span></div><span class="no">(15)</span></div>
+    <p>3) когда пакетик пуст, больше не доливай и допивай кружку.</p>
+    <p class="qed">Это верно, если температура не важна. Правило с учётом температуры — в Т5.</p>
+  </div>
+
+  <div class="proof">
+    <h3><span class="tag">Т3</span>Одна кружка, бесконечный долив, оптимум</h3>
+    <p>Пакетик отдаёт вкус быстрее, чем ты пьёшь (<span class="v">k</span> ≈ 0,5–1 мин⁻¹ против 0,05 кружки в минуту). Поэтому можно считать, что он отдал всё сразу. Пусть <span class="v">x</span> — сколько кружек уже выпито при доливе, тогда крепость падает экспоненциально:</p>
+    <div class="eq"><div class="f"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>C</mi><mn>1</mn></msub><mo>=</mo><mfrac><mrow><mn>1000</mn><mtext> </mtext><mi>M</mi></mrow><mi>V</mi></mfrac><mo separator="true">,</mo><mspace width="2em"/><mi>L</mi><mo>=</mo><mi>ln</mi><mo>⁡</mo><mfrac><msub><mi>C</mi><mn>1</mn></msub><msub><mi>C</mi><mn>0</mn></msub></mfrac><mo separator="true">,</mo><mspace width="2em"/><mi>C</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mo>=</mo><msub><mi>C</mi><mn>1</mn></msub><mtext> </mtext><msup><mi>e</mi><mrow><mo>−</mo><mi>x</mi></mrow></msup></mrow><annotation encoding="application/x-tex">C_1 = \frac{1000\,M}{V},\qquad L = \ln\frac{C_1}{C_0},\qquad C(x) = C_1\,e^{-x}</annotation></semantics></math></span></div><span class="no">(16)</span></div>
+    <p>При бесконечном доливе глотки полезны, пока <span class="v">C</span> &gt; <span class="v">C</span><sub>0</sub>, то есть при <span class="v">x</span> &lt; <span class="v">L</span>:</p>
+    <div class="eq"><div class="f"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>J</mi><mi mathvariant="normal">∞</mi></msub><mo>=</mo><mi>V</mi><mtext> ⁣</mtext><msubsup><mo>∫</mo><mn>0</mn><mi>L</mi></msubsup><mo stretchy="false">(</mo><mi>L</mi><mo>−</mo><mi>x</mi><mo stretchy="false">)</mo><mtext> </mtext><mi>d</mi><mi>x</mi><mo>=</mo><mfrac><mrow><mi>V</mi><msup><mi>L</mi><mn>2</mn></msup></mrow><mn>2</mn></mfrac></mrow><annotation encoding="application/x-tex">J_{\infty} = V\!\int_0^{L}(L-x)\,dx = \frac{V L^2}{2}</annotation></semantics></math></span></div><span class="no">(17)</span></div>
+    <p>Оптимум: доливаем, пока крепость не станет <span class="v">C</span>* (при <span class="v">x</span> = <span class="v">L</span> − 1), потом допиваем кружку, где каждый глоток даёт <span class="v">u</span> = 1:</p>
+    <div class="eq"><div class="f"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>J</mi><mtext>опт</mtext></msub><mo>=</mo><mi>V</mi><mrow><mo fence="true">[</mo><mo stretchy="false">(</mo><mi>L</mi><mo>−</mo><mn>1</mn><mo stretchy="false">)</mo><mi>L</mi><mo>−</mo><mfrac><mrow><mo stretchy="false">(</mo><mi>L</mi><mo>−</mo><mn>1</mn><msup><mo stretchy="false">)</mo><mn>2</mn></msup></mrow><mn>2</mn></mfrac><mo fence="true">]</mo></mrow><mo>+</mo><mi>V</mi><mo>⋅</mo><mn>1</mn><mo>=</mo><mfrac><mrow><mi>V</mi><mtext> </mtext><mo stretchy="false">(</mo><msup><mi>L</mi><mn>2</mn></msup><mo>+</mo><mn>1</mn><mo stretchy="false">)</mo></mrow><mn>2</mn></mfrac><mo separator="true">,</mo><mspace width="2em"/><msub><mi>W</mi><mtext>опт</mtext></msub><mo>=</mo><mi>V</mi><mi>L</mi></mrow><annotation encoding="application/x-tex">J_{\text{опт}} = V\left[(L-1)L - \frac{(L-1)^2}{2}\right] + V\cdot 1 = \frac{V\,(L^2+1)}{2},\qquad W_{\text{опт}} = V L</annotation></semantics></math></span></div><span class="no">(18)</span></div>
+    <p>Для кружки 200 мл и пакетика 0,8 г:</p>
+    <div class="eq"><div class="f"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>C</mi><mn>1</mn></msub><mo>=</mo><mfrac><mrow><mn>1000</mn><mo>⋅</mo><mn>0.8</mn></mrow><mn>200</mn></mfrac><mo>=</mo><mn>4</mn><mtext> г/л</mtext><mo separator="true">,</mo><mspace width="2em"/><mi>L</mi><mo>=</mo><mi>ln</mi><mo>⁡</mo><mfrac><mn>4</mn><mn>0.5</mn></mfrac><mo>=</mo><mi>ln</mi><mo>⁡</mo><mn>8</mn><mo>≈</mo><mn>2.08</mn></mrow><annotation encoding="application/x-tex">C_1 = \frac{1000\cdot 0.8}{200} = 4\ \text{г/л},\qquad L = \ln\frac{4}{0.5} = \ln 8 \approx 2.08</annotation></semantics></math></span></div><span class="no">(19)</span></div>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Стратегия</th><th>Формула</th><th class="n">По формуле</th><th class="n">Точная модель</th></tr></thead>
+        <tbody>
+          <tr><td>одна кружка без долива</td><td><span class="v">V L</span></td><td class="n">0,42</td><td class="n">0,41</td></tr>
+          <tr><td>доливать бесконечно</td><td><span class="v">V L</span>²/2</td><td class="n">0,43</td><td class="n">0,44</td></tr>
+          <tr><td>оптимум</td><td><span class="v">V</span>(<span class="v">L</span>² + 1)/2</td><td class="n">0,53</td><td class="n">0,53</td></tr>
+          <tr><td>потолок Т1</td><td><span class="v">V e</span><sup><span class="v">L</span>−1</sup></td><td class="n">0,59</td><td class="n">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Обе крайности проигрывают, оптимум лежит между ними. Если <span class="v">L</span> ≤ 1, то есть пакетик в одной кружке слабее <span class="v">e</span>·<span class="v">C</span><sub>0</sub>, доливать не нужно вообще. Если важен только вкус, план такой: первый глоток на 2-й минуте, 11 доливов до краёв, пока крепость не станет 1,36 г/л (около 24-й минуты), потом допить. Получится 416 мл, <span class="v">J</span> = 0,534, но первые глотки будут горячее 75 °C.</p>
+  </div>
+
+  <div class="proof">
+    <h3><span class="tag">Т4</span>Мелкие доливы выгоднее крупных</h3>
+    <p>Выпиваешь долю <span class="v">q</span> кружки и доливаешь столько же. За один такой цикл крепость умножается на (1 − <span class="v">q</span>). До порога <span class="v">C</span><sub>min</sub> выпьешь:</p>
+    <div class="eq"><div class="f"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>q</mi><msup><mo stretchy="false">)</mo><mi>n</mi></msup><mo>=</mo><mfrac><msub><mi>C</mi><mi>min</mi><mo>⁡</mo></msub><mi>C</mi></mfrac><mtext>  </mtext><mo>⟹</mo><mtext>  </mtext><mi>W</mi><mo>=</mo><mi>n</mi><mtext> </mtext><mi>q</mi><mi>V</mi><mo>=</mo><mi>V</mi><mi>ln</mi><mo>⁡</mo><mfrac><mi>C</mi><msub><mi>C</mi><mi>min</mi><mo>⁡</mo></msub></mfrac><mo>⋅</mo><mfrac><mi>q</mi><mrow><mo>−</mo><mi>ln</mi><mo>⁡</mo><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>q</mi><mo stretchy="false">)</mo></mrow></mfrac></mrow><annotation encoding="application/x-tex">(1-q)^n = \frac{C_{\min}}{C} \;\Longrightarrow\; W = n\,qV = V\ln\frac{C}{C_{\min}}\cdot\frac{q}{-\ln(1-q)}</annotation></semantics></math></span></div><span class="no">(20)</span></div>
+    <div class="eq"><div class="f"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mo>−</mo><mi>ln</mi><mo>⁡</mo><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>q</mi><mo stretchy="false">)</mo><mo>=</mo><mi>q</mi><mo>+</mo><mfrac><msup><mi>q</mi><mn>2</mn></msup><mn>2</mn></mfrac><mo>+</mo><mfrac><msup><mi>q</mi><mn>3</mn></msup><mn>3</mn></mfrac><mo>+</mo><mo>⋯</mo><mo>&gt;</mo><mi>q</mi><mspace width="1em"/><mo>⟹</mo><mspace width="1em"/><mfrac><mi>q</mi><mrow><mo>−</mo><mi>ln</mi><mo>⁡</mo><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>q</mi><mo stretchy="false">)</mo></mrow></mfrac><mo>&lt;</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">-\ln(1-q) = q + \frac{q^2}{2} + \frac{q^3}{3} + \dots &gt; q \quad\Longrightarrow\quad \frac{q}{-\ln(1-q)} &lt; 1</annotation></semantics></math></span></div><span class="no">(21)</span></div>
+    <p>Множитель падает с ростом <span class="v">q</span>: 0,95 при 10% (долив после каждого глотка), 0,84 при 30%, 0,72 при 50%, 0 при «допил до дна — залил». При крупных доливах ты долго пьёшь слишком крепкий чай и тратишь на него лишнее вещество.</p>
+  </div>
+
+  <div class="proof">
+    <h3><span class="tag">Т5</span>Температура: сколько доливать и почему остывший чайник не спасает</h3>
+    <p>Если доливать каждый глоток, температура выходит на постоянный уровень. На нём приток тепла с доливом равен потерям:</p>
+    <div class="eq"><div class="f"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>r</mi><mtext> </mtext><mo stretchy="false">(</mo><msub><mi>T</mi><mi>w</mi></msub><mo>−</mo><mi>T</mi><mo stretchy="false">)</mo><mo>=</mo><mi>h</mi><mtext> </mtext><mo stretchy="false">(</mo><mi>T</mi><mo>−</mo><msub><mi>T</mi><mi>a</mi></msub><mo stretchy="false">)</mo><mtext>  </mtext><mo>⟹</mo><mtext>  </mtext><mi>T</mi><mo>=</mo><mfrac><mrow><mi>r</mi><mtext> </mtext><msub><mi>T</mi><mi>w</mi></msub><mo>+</mo><mi>h</mi><mtext> </mtext><msub><mi>T</mi><mi>a</mi></msub></mrow><mrow><mi>r</mi><mo>+</mo><mi>h</mi></mrow></mfrac><mo separator="true">,</mo><mspace width="2em"/><mi>r</mi><mo>=</mo><mfrac><mi>s</mi><mrow><mi>V</mi><mi>τ</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">r\,(T_w - T) = h\,(T - T_a) \;\Longrightarrow\; T = \frac{r\,T_w + h\,T_a}{r + h},\qquad r = \frac{s}{V\tau}</annotation></semantics></math></span></div><span class="no">(22)</span></div>
+    <p>Для нашей кружки <span class="v">r</span> = 0,05 мин⁻¹. Кипятком до краёв получится 68 °C, горячевато. Водой из чайника на 80 °C — 56 °C. Чтобы держать температуру <span class="v">T</span>* = 60 °C, после каждого глотка нужно долить:</p>
+    <div class="eq"><div class="f"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>w</mi><mo>=</mo><mfrac><mrow><mo stretchy="false">(</mo><msub><mi>V</mi><mi>m</mi></msub><mo>+</mo><msub><mi>V</mi><mrow><mi>e</mi><mi>q</mi></mrow></msub><mo stretchy="false">)</mo><mo stretchy="false">(</mo><msup><mi>T</mi><mo>∗</mo></msup><mo>−</mo><msub><mi>T</mi><mi>a</mi></msub><mo stretchy="false">)</mo><mo fence="true" stretchy="true" minsize="1.2em" maxsize="1.2em">(</mo><mn>1</mn><mo>−</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>h</mi><mi>τ</mi></mrow></msup><mo fence="true" stretchy="true" minsize="1.2em" maxsize="1.2em">)</mo></mrow><mrow><msub><mi>T</mi><mi>w</mi></msub><mo>−</mo><msup><mi>T</mi><mo>∗</mo></msup></mrow></mfrac><mo>≈</mo><mfrac><mn>578</mn><mrow><msub><mi>T</mi><mi>w</mi></msub><mo>−</mo><mn>60</mn></mrow></mfrac><mtext> мл</mtext></mrow><annotation encoding="application/x-tex">w = \frac{(V_m+V_{eq})(T^*-T_a)\bigl(1-e^{-h\tau}\bigr)}{T_w - T^*} \approx \frac{578}{T_w - 60}\ \text{мл}</annotation></semantics></math></span></div><span class="no">(23)</span></div>
+    <p>Кипятка на 100 °C нужно около 14,5 мл, воды на 90 °C — 19 мл, на 85 °C — 23 мл. Но долить можно не больше 20 мл, иначе кружка переполнится. Значит, есть критическая температура чайника:</p>
+    <div class="eq"><div class="f"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msubsup><mi>T</mi><mi>w</mi><mtext>крит</mtext></msubsup><mo>=</mo><msup><mi>T</mi><mo>∗</mo></msup><mo>+</mo><mfrac><mn>578</mn><mi>s</mi></mfrac><mo>=</mo><mn>60</mn><mo>+</mo><mfrac><mn>578</mn><mn>20</mn></mfrac><mo>≈</mo><mn>89</mn><msup><mtext> </mtext><mo>∘</mo></msup><mtext>C</mtext></mrow><annotation encoding="application/x-tex">T_w^{\text{крит}} = T^* + \frac{578}{s} = 60 + \frac{578}{20} \approx 89\ ^\circ\text{C}</annotation></semantics></math></span></div><span class="no">(24)</span></div>
+    <p>Если вода холоднее, чай остывает даже при доливе до краёв. Отсюда два вывода. Доливать нужно <b>самой горячей</b> водой: миллилитр кипятка приносит 40 градусов сверх 60, а миллилитр воды на 80 °C только 20, и для того же тепла её нужно вдвое больше, то есть чай разбавится вдвое сильнее. А если чайник можно подогреть, это даёт +24% удовольствия.</p>
+  </div>
+
+  <div class="proof">
+    <h3><span class="tag">Т6</span>Горячая вода важна в первые минуты</h3>
+    <p>По формуле (3) время, за которое пакетик отдаёт половину оставшегося:</p>
+    <div class="eq"><div class="f"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>t</mi><mrow><mn>1</mn><mi mathvariant="normal">/</mi><mn>2</mn></mrow></msub><mo>=</mo><mfrac><mrow><mi>ln</mi><mo>⁡</mo><mn>2</mn></mrow><mrow><mi>k</mi><mo stretchy="false">(</mo><mi>T</mi><mo stretchy="false">)</mo></mrow></mfrac></mrow><annotation encoding="application/x-tex">t_{1/2} = \frac{\ln 2}{k(T)}</annotation></semantics></math></span></div><span class="no">(25)</span></div>
+    <div class="tbl">
+      <table>
+        <thead><tr><th class="n">Вода</th><th class="n"><span class="v">k</span>, мин⁻¹</th><th class="n">Половина за</th></tr></thead>
+        <tbody>
+          <tr><td class="n">100 °C</td><td class="n">1,04</td><td class="n">0,7 мин</td></tr>
+          <tr><td class="n">80 °C</td><td class="n">0,50</td><td class="n">1,4 мин</td></tr>
+          <tr><td class="n">60 °C</td><td class="n">0,22</td><td class="n">3,1 мин</td></tr>
+          <tr><td class="n">22 °C</td><td class="n">0,034</td><td class="n">20 мин</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>В холодной воде экстракция в 15–30 раз медленнее. Но первая заливка кипятком за 10 минут вытягивает почти всё. Остаток в пакетике стремится к доле жидкости внутри него:</p>
+    <div class="eq"><div class="f"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mi>b</mi><mi>M</mi></mfrac><mtext>  </mtext><mo>→</mo><mtext>  </mtext><mfrac><msub><mi>v</mi><mi>b</mi></msub><mrow><msub><mi>v</mi><mi>b</mi></msub><mo>+</mo><mi>V</mi></mrow></mfrac><mo>=</mo><mfrac><mn>5</mn><mn>205</mn></mfrac><mo>≈</mo><mn>2.4</mn><mi mathvariant="normal">%</mi></mrow><annotation encoding="application/x-tex">\frac{b}{M} \;\to\; \frac{v_b}{v_b + V} = \frac{5}{205} \approx 2.4\%</annotation></semantics></math></span></div><span class="no">(26)</span></div>
+    <p>Поэтому позже температура долива влияет на то, насколько горячо пить, а не на крепость.</p>
+  </div>
+
+  <div class="proof">
+    <h3><span class="tag">Т7</span>Численная проверка</h3>
+    <p>Уравнения (1)–(6) решены численно с шагом 4 секунды. Чтобы проверить оптимальность плана, я перебирал объёмы всех доливов, по одному за раз, пока результат улучшался (метод покоординатного подъёма).</p>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Проверка</th><th class="n">Простое правило</th><th class="n">Лучшее найденное</th></tr></thead>
+        <tbody>
+          <tr><td>план «Как пить», чайник остывает, <span class="v">J<sub>T</sub></span></td><td class="n">0,369</td><td class="n">0,373 (99%)</td></tr>
+          <tr><td>чайник подогревается, <span class="v">J<sub>T</sub></span></td><td class="n">0,458</td><td class="n">0,467 (98%)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Если важен только вкус, формула (18) даёт 0,532, а точная модель с тем же правилом — 0,534. Для кружки 300 мл я дополнительно проверял порог остановки из Т2: при 0,8·<span class="v">C</span>*, <span class="v">C</span>* и 1,25·<span class="v">C</span>* выходит 0,563, 0,569 и 0,560. Максимум ровно в <span class="v">C</span>*.</p>
+  </div>
+</section>
+
+<section id="limits">
+  <h2>Что оценено, а не измерено</h2>
+  <p>Оценки, а не замеры: <span class="v">k</span><sub>80</sub> для всех веществ вкуса (измерения есть только для кофеина), <span class="v">v<sub>b</sub></span>, <span class="v">V<sub>eq</sub></span>, скорости остывания <span class="v">h</span> и <span class="v">h<sub>k</sub></span> для конкретной кружки и чайника. Закон Вебера–Фехнера и функция комфорта — модели восприятия, а не законы природы. Порог <span class="v">C</span><sub>0</sub> у каждого свой. Чтобы узнать свой, возьми 50 мл обычного чая (около 3 г/л) и доливай воду, пока вкус не станет «уже не чай». Если долито <span class="v">x</span> мл, то <span class="v">C</span><sub>0</sub> ≈ 3·50/(50 + <span class="v">x</span>).</p>
+  <p class="muted">Полные тексты статей мне открыть не удалось, числа взяты из их аннотаций.</p>
+  <h3>Источники</h3>
+  <ol class="sources">
+    <li><a href="https://www.sciencedirect.com/science/article/abs/pii/S0308814699002629">Kinetics of tea infusion, Part 2: tea-bag material</a> — экстракция кофеина первого порядка, пакетик на 29% медленнее, <span class="v">E<sub>a</sub></span> ≈ 40 кДж/моль</li>
+    <li><a href="https://www.sciencedirect.com/science/article/abs/pii/030881469290033X">Kinetics and equilibria of tea infusion, Part 9</a> — <span class="v">E<sub>a</sub></span> 40 и 62 кДж/моль для чёрного и зелёного чая</li>
+    <li><a href="https://www.researchgate.net/publication/237949649_Kinetics_of_tea_infusion_Part_3_The_effect_of_tea_bag_size_and_shape_on_the_rate_of_caffeine_extraction_from_Ceylon_orange_pekoe_tea">Kinetics of tea infusion, Part 3: tea bag size</a> — скорость экстракции при 80 °C</li>
+    <li><a href="https://scijournals.onlinelibrary.wiley.com/doi/abs/10.1002/jsfa.2740361216">Price, 1985</a> — кофеин выходит быстрее теафлавинов</li>
+    <li><a href="https://www.sciencedirect.com/science/article/abs/pii/S030881460100108X">Solids extraction yield of black tea</a> — растворимые вещества чёрного чая</li>
+    <li><a href="https://protonsforbreakfast.wordpress.com/2018/11/07/mug-cooling-initial-results/">Protons for Breakfast: Mug cooling</a> — керамическая кружка с кипятком</li>
+    <li><a href="https://foodsci.oregonstate.edu/sites/agscid7/files/foodsci/attachments/hot-bev-temp.pdf">A Review of Hot Beverage Temperatures</a> — предпочтительная температура 60 ± 8 °C</li>
+    <li><a href="https://www.ncbi.nlm.nih.gov/books/NBK543941/">IARC: Drinking Coffee, Mate, and Very Hot Beverages</a> — напитки горячее 65 °C</li>
+  </ol>
+</section>
+
+</div>
+
+<script>
+(function () {
+  var TRACE = [[0.0, 85.7, 0.0, 100.0, 200], [0.5, 84.6, 1.049, 99.4, 200], [1.0, 83.5, 1.79, 98.8, 200], [1.5, 82.4, 2.319, 98.3, 200], [2.0, 81.4, 2.702, 97.7, 200], [2.5, 80.3, 2.983, 97.1, 200], [3.0, 79.3, 3.19, 96.6, 200], [3.5, 78.3, 3.346, 96.0, 200], [4.0, 77.4, 3.463, 95.5, 200], [4.5, 76.4, 3.553, 94.9, 200], [5.0, 75.4, 3.622, 94.4, 200], [5.5, 74.5, 3.675, 93.8, 200], [6.0, 73.6, 3.717, 93.3, 200], [6.5, 72.7, 3.75, 92.8, 200], [7.0, 71.8, 3.776, 92.2, 200], [7.5, 71.0, 3.797, 91.7, 200], [8.0, 70.1, 3.814, 91.2, 200], [8.5, 69.3, 3.828, 90.7, 200], [9.0, 68.5, 3.84, 90.1, 200], [9.5, 67.7, 3.849, 89.6, 200], [10.0, 66.9, 3.857, 89.1, 180], [10.5, 66.0, 3.864, 88.6, 180], [11.0, 65.2, 3.869, 88.1, 180], [11.5, 64.4, 3.874, 87.6, 180], [12.0, 63.6, 3.879, 87.2, 160], [12.5, 62.7, 3.883, 86.7, 160], [13.0, 61.9, 3.886, 86.2, 160], [13.5, 61.0, 3.889, 85.7, 160], [14.0, 66.4, 2.724, 85.2, 200], [14.5, 65.6, 2.73, 84.8, 200], [15.0, 64.8, 2.735, 84.3, 200], [15.5, 64.1, 2.739, 83.8, 200], [16.0, 65.0, 2.469, 83.4, 200], [16.5, 64.2, 2.473, 82.9, 200], [17.0, 63.5, 2.476, 82.4, 200], [17.5, 62.8, 2.479, 82.0, 200], [18.0, 63.7, 2.234, 81.5, 200], [18.5, 62.9, 2.237, 81.1, 200], [19.0, 62.2, 2.239, 80.7, 200], [19.5, 61.5, 2.241, 80.2, 200], [20.0, 62.4, 2.019, 79.8, 200], [20.5, 61.7, 2.021, 79.4, 200], [21.0, 61.0, 2.023, 78.9, 200], [21.5, 60.3, 2.025, 78.5, 200], [22.0, 61.2, 1.824, 78.1, 200], [22.5, 60.5, 1.826, 77.7, 200], [23.0, 59.8, 1.828, 77.2, 200], [23.5, 59.2, 1.829, 76.8, 200], [24.0, 60.0, 1.647, 76.4, 200], [24.5, 59.3, 1.649, 76.0, 200], [25.0, 58.7, 1.651, 75.6, 200], [25.5, 58.0, 1.652, 75.2, 200], [26.0, 58.8, 1.488, 74.8, 200], [26.5, 58.2, 1.489, 74.4, 200], [27.0, 57.6, 1.49, 74.0, 200], [27.5, 56.9, 1.492, 73.6, 200], [28.0, 57.7, 1.343, 73.2, 200], [28.5, 57.1, 1.345, 72.9, 200], [29.0, 56.5, 1.346, 72.5, 200], [29.5, 55.9, 1.347, 72.1, 200], [30.0, 56.6, 1.213, 71.7, 200], [30.5, 56.0, 1.214, 71.4, 200], [31.0, 55.5, 1.215, 71.0, 200], [31.5, 54.9, 1.216, 70.6, 200], [32.0, 55.6, 1.095, 70.3, 200], [32.5, 55.0, 1.096, 69.9, 200], [33.0, 54.5, 1.097, 69.5, 200], [33.5, 53.9, 1.098, 69.2, 200], [34.0, 54.6, 0.988, 68.8, 200], [34.5, 54.0, 0.989, 68.5, 200], [35.0, 53.5, 0.99, 68.1, 200], [35.5, 52.9, 0.991, 67.8, 200], [36.0, 53.6, 0.892, 67.5, 200], [36.5, 53.1, 0.893, 67.1, 200], [37.0, 52.5, 0.894, 66.8, 200], [37.5, 52.0, 0.895, 66.4, 200], [38.0, 52.7, 0.806, 66.1, 200], [38.5, 52.1, 0.806, 65.8, 200], [39.0, 51.6, 0.807, 65.5, 200], [39.5, 51.1, 0.808, 65.1, 200], [40.0, 51.8, 0.727, 64.8, 200], [40.5, 51.2, 0.728, 64.5, 200], [41.0, 50.7, 0.729, 64.2, 200], [41.5, 50.2, 0.729, 63.9, 200], [42.0, 49.8, 0.73, 63.5, 180], [42.5, 49.2, 0.73, 63.2, 180], [43.0, 48.7, 0.731, 62.9, 180], [43.5, 48.2, 0.731, 62.6, 180], [44.0, 47.7, 0.731, 62.3, 160], [44.5, 47.2, 0.732, 62.0, 160], [45.0, 46.7, 0.732, 61.7, 160], [45.5, 46.2, 0.732, 61.4, 160], [46.0, 45.7, 0.733, 61.1, 140], [46.5, 45.1, 0.733, 60.8, 140], [47.0, 44.6, 0.733, 60.5, 140], [47.5, 44.1, 0.734, 60.3, 140], [48.0, 43.6, 0.734, 60.0, 120], [48.5, 43.0, 0.734, 59.7, 120], [49.0, 42.5, 0.734, 59.4, 120], [49.5, 41.9, 0.735, 59.1, 120], [50.0, 41.4, 0.735, 58.8, 100], [50.5, 40.9, 0.735, 58.6, 100], [51.0, 40.3, 0.735, 58.3, 100], [51.5, 39.8, 0.735, 58.0, 100], [52.0, 39.3, 0.736, 57.8, 80], [52.5, 38.7, 0.736, 57.5, 80], [53.0, 38.1, 0.736, 57.2, 80], [53.5, 37.6, 0.736, 57.0, 80], [54.0, 37.0, 0.736, 56.7, 60], [54.5, 36.4, 0.737, 56.4, 60], [55.0, 35.9, 0.737, 56.2, 60], [55.5, 35.3, 0.737, 55.9, 60], [56.0, 34.8, 0.737, 55.7, 40], [56.5, 34.1, 0.737, 55.4, 40], [57.0, 33.5, 0.738, 55.2, 40], [57.5, 33.0, 0.738, 54.9, 40], [58.0, 32.4, 0.738, 54.7, 20], [58.5, 31.8, 0.739, 54.4, 20], [59.0, 31.1, 0.739, 54.2, 20], [59.5, 30.6, 0.739, 54.0, 20], [60.0, 30.0, 0.74, 53.7, 0]];
+  var SIPS = [[10, 3.86, 67, 0, 89], [12, 3.88, 64, 0, 87], [14, 3.89, 60, 60, 85], [16, 2.74, 63, 20, 83], [18, 2.48, 62, 20, 82], [20, 2.24, 61, 20, 80], [22, 2.03, 60, 20, 78], [24, 1.83, 59, 20, 76], [26, 1.65, 57, 20, 75], [28, 1.49, 56, 20, 73], [30, 1.35, 55, 20, 72], [32, 1.22, 54, 20, 70], [34, 1.1, 53, 20, 69], [36, 0.99, 52, 20, 67], [38, 0.89, 51, 20, 66], [40, 0.81, 51, 20, 65], [42, 0.73, 50, 0, 64], [44, 0.73, 48, 0, 62], [46, 0.73, 46, 0, 61], [48, 0.73, 44, 0, 60], [50, 0.73, 41, 0, 59], [52, 0.74, 39, 0, 58], [54, 0.74, 37, 0, 57], [56, 0.74, 35, 0, 56], [58, 0.74, 32, 0, 55], [60, 0.74, 30, 0, 54]];
+
+  var rows = document.getElementById('sipRows');
+  var fmt = function (x, d) { return x.toFixed(d).replace('.', ','); };
+  SIPS.forEach(function (r, i) {
+    var tr = document.createElement('tr');
+    if (i > 0 && SIPS[i - 1][3] > 0 && r[3] === 0) tr.className = 'stop';
+    tr.innerHTML = '<td class="n">' + r[0] + '</td><td class="n">' + fmt(r[1], 2) + '</td><td class="n">' + r[2] +
+      '</td><td class="n">' + (r[3] ? r[3] : '—') + '</td><td class="n">' + r[4] + '</td>';
+    rows.appendChild(tr);
+  });
+
+  var NS = 'http://www.w3.org/2000/svg';
+  function el(name, attrs, parent) {
+    var e = document.createElementNS(NS, name);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+
+  function chart(host, cfg) {
+    host.innerHTML = '';
+    var W = Math.max(300, host.clientWidth || 720), H = cfg.h, m = { l: 40, r: W < 480 ? 78 : 96, t: 22, b: 30 };
+    var iw = W - m.l - m.r, ih = H - m.t - m.b;
+    var x = function (t) { return m.l + t / 60 * iw; };
+    var y = function (v) { return m.t + ih - (v - cfg.y0) / (cfg.y1 - cfg.y0) * ih; };
+    var svg = el('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': cfg.aria }, host);
+
+    if (cfg.band) {
+      el('rect', { x: m.l, y: y(cfg.band[1]), width: iw, height: y(cfg.band[0]) - y(cfg.band[1]), fill: 'var(--band)' }, svg);
+    }
+    cfg.ticks.forEach(function (v) {
+      el('line', { x1: m.l, x2: m.l + iw, y1: y(v), y2: y(v), stroke: 'var(--grid)', 'stroke-width': 1 }, svg);
+      var t = el('text', { x: m.l - 8, y: y(v) + 4, 'text-anchor': 'end' }, svg); t.textContent = String(v).replace('.', ',');
+    });
+    [0, 10, 20, 30, 40, 50, 60].forEach(function (v) {
+      var t = el('text', { x: x(v), y: H - 8, 'text-anchor': 'middle' }, svg); t.textContent = v + (v === 60 ? ' мин' : '');
+    });
+    el('line', { x1: m.l, x2: m.l + iw, y1: m.t + ih, y2: m.t + ih, stroke: 'var(--rule)', 'stroke-width': 1 }, svg);
+
+    [[10, 'первый глоток'], [42, 'стоп долив']].forEach(function (mk) {
+      el('line', { x1: x(mk[0]), x2: x(mk[0]), y1: m.t, y2: m.t + ih, stroke: 'var(--rule)', 'stroke-width': 1 }, svg);
+      var t = el('text', { x: x(mk[0]) + 5, y: m.t - 8 }, svg); t.textContent = mk[1];
+    });
+
+    (cfg.refs || []).forEach(function (rf) {
+      el('line', { x1: m.l, x2: m.l + iw, y1: y(rf[0]), y2: y(rf[0]), stroke: 'var(--muted)', 'stroke-width': 1, 'stroke-opacity': 0.55 }, svg);
+      var t = el('text', { x: m.l + iw + 8, y: y(rf[0]) + 4, class: 'lbl' }, svg); t.textContent = rf[1];
+    });
+
+    cfg.series.forEach(function (s) {
+      var d = TRACE.map(function (p, i) { return (i ? 'L' : 'M') + x(p[0]).toFixed(1) + ' ' + y(p[s.col]).toFixed(1); }).join(' ');
+      el('path', { d: d, fill: 'none', stroke: s.color, 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, svg);
+      var last = TRACE[TRACE.length - 1];
+      el('circle', { cx: x(last[0]), cy: y(last[s.col]), r: 4, fill: s.color, stroke: 'var(--bg)', 'stroke-width': 2 }, svg);
+      var t = el('text', { x: x(last[0]) + 8, y: y(last[s.col]) + 4 + (s.dy || 0), class: 'lbl' }, svg);
+      t.textContent = s.label(last);
+    });
+
+    var cross = el('line', { y1: m.t, y2: m.t + ih, stroke: 'var(--muted)', 'stroke-width': 1, visibility: 'hidden' }, svg);
+    var dots = cfg.series.map(function (s) { return el('circle', { r: 4, fill: s.color, stroke: 'var(--bg)', 'stroke-width': 2, visibility: 'hidden' }, svg); });
+    var hit = el('rect', { x: m.l, y: m.t, width: iw, height: ih, fill: 'transparent' }, svg);
+    var tip = document.createElement('div'); tip.className = 'tip'; tip.hidden = true; host.appendChild(tip);
+
+    function move(ev) {
+      var r = svg.getBoundingClientRect();
+      var px = (ev.clientX - r.left) / r.width * W;
+      var t = Math.max(0, Math.min(60, (px - m.l) / iw * 60));
+      var p = TRACE[Math.min(TRACE.length - 1, Math.round(t * 2))];
+      cross.setAttribute('x1', x(p[0])); cross.setAttribute('x2', x(p[0])); cross.setAttribute('visibility', 'visible');
+      cfg.series.forEach(function (s, i) {
+        dots[i].setAttribute('cx', x(p[0])); dots[i].setAttribute('cy', y(p[s.col])); dots[i].setAttribute('visibility', 'visible');
+      });
+      var mm = Math.floor(p[0]), ss = Math.round((p[0] - mm) * 60);
+      tip.innerHTML = '<b>' + mm + ':' + (ss < 10 ? '0' : '') + ss + '</b><br>' + cfg.series.map(function (s) {
+        return '<i style="background:' + s.color + '"></i>' + s.tip(p);
+      }).join('<br>');
+      tip.hidden = false;
+      var sx = x(p[0]) / W * r.width;
+      var tw = tip.offsetWidth;
+      tip.style.left = (sx + 12 + tw > r.width ? sx - 12 - tw : sx + 12) + 'px';
+      tip.style.top = '8px';
+    }
+    function leave() {
+      tip.hidden = true; cross.setAttribute('visibility', 'hidden');
+      dots.forEach(function (d) { d.setAttribute('visibility', 'hidden'); });
+    }
+    hit.addEventListener('pointermove', move);
+    hit.addEventListener('pointerdown', move);
+    hit.addEventListener('pointerleave', leave);
+  }
+
+  var CFG_T = {
+    h: 280, y0: 20, y1: 100, ticks: [20, 40, 60, 80, 100], band: [52, 68],
+    aria: 'Температура чая и воды в чайнике за 60 минут',
+    series: [
+      { col: 3, color: 'var(--kettle)', label: function (p) { return 'чайник ' + Math.round(p[3]) + '°'; }, tip: function (p) { return 'чайник ' + fmt(p[3], 0) + ' °C'; } },
+      { col: 1, color: 'var(--tea)', label: function (p) { return 'чай ' + Math.round(p[1]) + '°'; }, tip: function (p) { return 'чай ' + fmt(p[1], 0) + ' °C'; } }
+    ]
+  };
+  var CFG_C = {
+    h: 240, y0: 0, y1: 4.5, ticks: [0, 1, 2, 3, 4],
+    refs: [[1.36, 'C* = 1,36'], [0.5, 'C₀ = 0,5']],
+    aria: 'Крепость чая за 60 минут',
+    series: [
+      { col: 2, color: 'var(--tea)', dy: -10, label: function (p) { return fmt(p[2], 2) + ' г/л'; }, tip: function (p) { return 'крепость ' + fmt(p[2], 2) + ' г/л'; } }
+    ]
+  };
+  function drawAll() {
+    chart(document.getElementById('plotT'), CFG_T);
+    chart(document.getElementById('plotC'), CFG_C);
+  }
+  drawAll();
+  var lastW = document.getElementById('plotT').clientWidth, timer;
+  window.addEventListener('resize', function () {
+    clearTimeout(timer);
+    timer = setTimeout(function () {
+      var w = document.getElementById('plotT').clientWidth;
+      if (w !== lastW) { lastW = w; drawAll(); }
+    }, 150);
+  });
+})();
+</script>
