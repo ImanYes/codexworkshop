@@ -1,0 +1,9 @@
+# Файлы, которые Ren'Py создаёт сам при запуске
+*.rpyc
+*.rpymc
+*.rpyb
+game/cache/
+game/saves/
+log.txt
+errors.txt
+traceback.txt
