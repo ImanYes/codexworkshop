@@ -4,7 +4,7 @@
 ## Знания тоже двигают сложность. Сам экзамен пока — тестовая заглушка вместо мини-игры.
 
 define EXAM_WORDS = ["легко", "нормально", "тяжело", "очень тяжело"]
-define EXAM_PASS_CHANCE = [90, 70, 45, 25]      # заглушка: шанс сдать по сложности
+define EXAM_PASS_CHANCE = [90, 70, 40, 15]      # заглушка: шанс сдать по сложности
 
 init python:
 
@@ -18,9 +18,10 @@ init python:
             lvl -= 1
         elif r < 40:
             lvl += 1
+        ## Знания 6+ — легче, ниже 5 — тяжелее: так знания важны и тем, кто был на всех семинарах.
         if stats["know"] >= 60:
             lvl -= 1
-        elif stats["know"] < 30:
+        elif stats["know"] < 50:
             lvl += 1
         return max(0, min(3, lvl))
 
@@ -36,7 +37,7 @@ label gruzin_exam_test:
     $ missed_sem = exam_diff.get("gruzin", 0)
     "Экзамен по ангему (тест). Сложность: [lvl_word]. Пропущено семинаров вживую: [missed_sem]."
     ## Проспать экзамен можно, только если усталость 10 и мораль 0.
-    if stats["fatigue"] >= 100 and shown("morale") == 0:
+    if exhausted and shown("morale") == 0:
         "Ты {g=проспала}проспал{/g} экзамен: усталость 10, мораль 0."
         $ renpy.hide("plate")
         return

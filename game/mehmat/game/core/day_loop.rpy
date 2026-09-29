@@ -9,14 +9,15 @@ default gruzin_sem_seen = 0         # сколько семинаров Груз
 default has_smoking = False
 default smoking_day = 0             # abs_day, когда получил навык
 default has_job = False
-default job_rate = 4
+default job_rate = JOB_RATE
 default gym_pass = False
+default exhausted = False           # лёг спать с усталостью 10/10 → утром проспишь
 default heard_anecdotes = []        # анекдоты в этом прохождении
 
 ## Счётчики дня.
 default talks_today = {}
 default talk_counter = 0            # каждый 3-й разговор — выбор реплики
-default energy_drink = False
+default energy_drink = 0            # сколько энергетиков выпито сегодня
 default went_home = False
 default worked = False
 default phone_used = False
@@ -35,7 +36,7 @@ init python:
         global events_today, line_steps_today, day_log, today_acts, snap, present, cur_pair
         global sunday_refused
         talks_today = {}
-        energy_drink = False
+        energy_drink = 0
         went_home = False
         worked = False
         phone_used = False
@@ -62,16 +63,18 @@ init python:
         change("rep", -M)
         if roll(10):
             change("know", -M)
-        skips[t] = skips.get(t, 0) + 1
-        if skips[t] >= 2:
-            rel(t, -B)
-            skips[t] = 0
+        ## «Два прогула подряд» — кроме лекций Грузина: их можно пропускать спокойно (его скрытое правило).
+        if not (t == "gruzin" and p["kind"] == "лекция"):
+            skips[t] = skips.get(t, 0) + 1
+            if skips[t] >= 2:
+                rel(t, -B)
+                skips[t] = 0
         if t == "gruzin" and not p["zoom"] and p["kind"] == "семинар":
             gruzin_sem_missed = True
             exam_diff["gruzin"] = exam_diff.get("gruzin", 0) + 1
         for h in due_homework(p):
             homework.remove(h)
-            rel(h["teacher"], -S)
+            hw_rel(h["teacher"], -1)
             if h["known"]:
                 day_log.append(gf("Не сдал", "Не сдала") +
                                " домашку по предмету «{}» — прогул пары.".format(p["subj"]))
@@ -126,11 +129,14 @@ label morning:
         $ money_add(1)
         $ day_log.append("Понедельник: +$1 на неделю.")
 
-    if stats["fatigue"] >= 100:
+    ## Решается ночью: сон −20 не даёт утром увидеть 10/10, поэтому смотрим, с чем лёг.
+    if exhausted:
         $ wake_hour = renpy.random.choice([11, 12])
         $ forced = True
         "Будильник звонил. Ты его не {g=слышала}слышал{/g}. Усталость взяла своё."
-    elif shown("morale") < 3 and roll({2: 15, 1: 30, 0: 45}[shown("morale")]):
+    ## Шанс проспать от низкой морали (было 15/30/45 %): мягче, чтобы ноль не был ловушкой —
+    ## просып съедает пары, а с ними сдачу домашки, главный источник морали у старательного.
+    elif shown("morale") < 3 and roll({2: 10, 1: 20, 0: 30}[shown("morale")]):
         $ wake_hour = renpy.random.choice([11, 12])
         $ forced = True
         "Будильник звенит, а вставать совсем незачем. Глаза закрываются сами."
@@ -223,7 +229,8 @@ label attend_pair:
 
     if cur_mode == "own":
         "Камера выключена, микрофон тоже. Грузин что-то чертит на экране. Ты {g=занята}занят{/g} своим."
-        if events_today < EVENTS_PER_DAY and roll(40):
+        ## 40% из дока; но за один день Грузин спрашивает тебя не больше раза.
+        if events_today < EVENTS_PER_DAY and event_ready("zoom_hear", 1) and roll(40):
             $ mark_event("zoom_hear")
             call ev_zoom_hear
         $ renpy.hide("plate")
@@ -306,17 +313,18 @@ label submit_homework:
             else:
                 "Ты сдаёшь домашку по предмету «[h[subj]]». Приятно."
                 $ change("morale", +B)
-                $ rel(h["teacher"], +S)
-                $ change("rep", +M)
+                $ hw_rel(h["teacher"], +1)
+                ## Репутация — С: «сдать сделанную: сильно +репутация» (mehmat-design.md, раздел 4).
+                $ change("rep", +S)
                 $ change("know", +S)
                 $ day_log.append(gf("Сдал", "Сдала") + " домашку: {}.".format(h["subj"]))
         elif h["known"]:
             "Домашка по предмету «[h[subj]]» не сделана. Препод молча ставит пометку."
-            $ rel(h["teacher"], -S)
+            $ hw_rel(h["teacher"], -1)
             $ day_log.append(gf("Не сдал", "Не сдала") + " домашку: {}.".format(h["subj"]))
         else:
             "Оказывается, в прошлый раз задавали домашку. Ты о ней не {g=знала}знал{/g}."
-            $ rel(h["teacher"], -S)
+            $ hw_rel(h["teacher"], -1)
             $ day_log.append(gf("Не знал", "Не знала") + " о домашке по предмету «{}».".format(h["subj"]))
     return
 
@@ -326,7 +334,8 @@ label skip_pair:
     $ present = skip_company()
     "Ты не идёшь на пару."
 
-    if events_today < EVENTS_PER_DAY and roll(5):
+    ## 5% из дока; но не два дня подряд и не дважды за день.
+    if events_today < EVENTS_PER_DAY and event_ready("director", 2) and roll(5):
         $ mark_event("director")
         call ev_director
         return
@@ -378,7 +387,7 @@ label apai_question:
     $ ans = renpy.display_menu([(o, o) for o in opts])
     if ans == q[1][0]:
         ap "Правильно! Молодец."
-        $ rel("apai", +S)
+        $ rel("apai", +M)
     else:
         ap "Нет. Правильно — «[q[1][0]]». Повтори дома."
         $ rel("apai", -M)
@@ -478,7 +487,8 @@ label talk(pid, big=False):
         $ ok = roll(talk_chance(pid))
 
     if ok:
-        $ rel(pid, +S if big else +M)
+        ## С другом и близким большой перерыв даёт М, а не С (TALK_S_BELOW_TIER, core/stats.rpy).
+        $ rel(pid, +S if big and tier(pid) < TALK_S_BELOW_TIER else +M)
         "Разговор клеится. [nm] улыбается."
     else:
         $ rel(pid, -M)
@@ -494,10 +504,11 @@ label buffet:
         "Энергетик ($1): −усталость сейчас, но ночью сон хуже":
             $ money_add(-1)
             $ change("fatigue", -S)
-            $ energy_drink = True
+            $ energy_drink += 1
         "Булочка ($1): +мораль":
             $ money_add(-1)
-            $ change("morale", +S)
+            ## +М, а не +С: с работой $1 дёшев, и 4 булочки (+28) перекрывали смену с запасом.
+            $ change("morale", +M)
         "Ничего не брать":
             pass
     scene bg corridor
@@ -556,10 +567,10 @@ label after_classes:
             call gym
         "Купить абонемент ($10) и в качалку" if not gym_pass and money >= 10:
             call buy_gym
-        "На работу" if has_job:
+        "На работу (+$[job_rate])" if has_job:
             call work_shift
     if has_job and not worked:
-        $ job_rate = max(1, job_rate - 1)
+        $ job_rate = max(JOB_RATE_MIN, job_rate - 1)
         $ day_log.append(gf("Пропустил", "Пропустила") + " работу: ставка теперь ${}.".format(job_rate))
     return
 
@@ -585,10 +596,15 @@ label buy_gym:
 label work_shift:
     $ worked = True
     $ money_add(job_rate)
-    $ change("morale", -B)
+    ## −С за смену (было −Б): неделя смен = −42, как неделя Грузина. С −Б работа каждый день вела к «Ушёл сам».
+    $ change("morale", -S)
     $ change("fatigue", +S)
     scene bg work
     "Четыре часа работы. +$[job_rate]."
+    ## Вышел на смену — ставка возвращается на $1 (до $4). Ходишь через день — держится $3–4.
+    if job_rate < JOB_RATE:
+        $ job_rate += 1
+        $ day_log.append("Начальник доволен: ставка снова ${}.".format(job_rate))
     return
 
 
@@ -601,6 +617,12 @@ label evening:
     $ ev = take_event("evening")
     if ev:
         call expression ev
+
+    ## Созрел шаг 3 линии №1 — она зовёт сама (lines/n1.rpy).
+    if line_ripe("n1", "evening") and abs_day - n1_invite_day >= N1_INVITE_EVERY:
+        call line_n1_invite
+        if _return:
+            return
 
 label evening_choice:
     $ todo = known_todo()
@@ -716,7 +738,12 @@ label night:
     if ev:
         call expression ev
 
-    $ change_raw("fatigue", -15 if energy_drink else -20)
+    ## Лёг без сил → утром будильник не разбудит (study-day.md, раздел 2: «Усталость 10 → проспал»).
+    $ exhausted = stats["fatigue"] >= OVERSLEEP_AT
+    if exhausted:
+        $ day_log.append(gf("Лёг", "Легла") + " спать без сил (усталость 10) — утром будильник не разбудит.")
+    ## Энергетик — заём: −7 сейчас, +5 ночью за каждую банку (иначе 4 банки = −28 почти даром).
+    $ change_raw("fatigue", -max(0, SLEEP_REST - ENERGY_SLEEP_PENALTY * energy_drink))
     if energy_drink:
         "Энергетик ещё бродит в крови. Сон рваный."
 

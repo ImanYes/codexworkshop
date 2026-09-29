@@ -7,13 +7,13 @@ init python:
                 and cur_pair["teacher"] != "fizruk")
 
     add_event("board", "pair", "ev_board", "К доске!",
-              cond=lambda: on_normal_pair() and not cur_pair["zoom"])
+              cond=lambda: on_normal_pair() and not cur_pair["zoom"], cooldown=3)
     add_event("surprise_test", "pair", "ev_surprise_test", "Самостоятельная без предупреждения",
-              cond=lambda: on_normal_pair() and cur_pair["kind"] == "семинар")
+              cond=lambda: on_normal_pair() and cur_pair["kind"] == "семинар", cooldown=4)
     add_event("zoom_hear", "pair", "ev_zoom_hear", "Вы меня слышите?",
-              cond=lambda: cur_pair is not None and cur_pair["zoom"], weight=15)
+              cond=lambda: cur_pair is not None and cur_pair["zoom"], weight=15, cooldown=3)
     add_event("neighbor_hint", "pair", "ev_neighbor_hint", "Сосед просит подсказать",
-              cond=lambda: on_normal_pair() and not cur_pair["zoom"] and len(arrived) > 0)
+              cond=lambda: on_normal_pair() and not cur_pair["zoom"] and len(arrived) > 0, cooldown=3)
 
 
 label ev_board:

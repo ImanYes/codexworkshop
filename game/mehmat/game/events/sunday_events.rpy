@@ -5,14 +5,22 @@ init python:
     def met_students():
         return [p for p in STUDENT_ORDER if met(p)]
 
-    add_event("birthday", "sunday", "ev_birthday", "День рождения одногруппника",
-              cond=lambda: len(met_students()) > 0, cooldown=7)
-    add_event("trip", "sunday", "ev_trip", "Поездка за город с группой",
-              cond=lambda: stats["rep"] >= 60 and len(met_students()) > 0, cooldown=14)
+    def birthday_people():
+        """День рождения у человека раз в игру: знакомые, у кого его ещё не было."""
+        return [p for p in met_students() if p not in birthdays_done]
 
+    ## Пауза 8 дней: день рождения не каждое воскресенье подряд.
+    add_event("birthday", "sunday", "ev_birthday", "День рождения одногруппника",
+              cond=lambda: len(birthday_people()) > 0, cooldown=8, weight=30)
+    add_event("trip", "sunday", "ev_trip", "Поездка за город с группой",
+              cond=lambda: stats["rep"] >= 60 and len(met_students()) > 0, cooldown=14, weight=20)
+
+
+default birthdays_done = set()
 
 label ev_birthday:
-    $ bd = renpy.random.choice(met_students())
+    $ bd = renpy.random.choice(birthday_people())
+    $ birthdays_done.add(bd)
     $ bdname = who(bd)
     $ renpy.show("plate " + bd)
     "Сообщение от [bdname]: «У меня сегодня днюха! Приходи в общагу, отмечаем»."

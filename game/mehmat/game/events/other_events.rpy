@@ -4,13 +4,18 @@
 
 init python:
     add_event("parallel", "smoke", "ev_parallel", "Параллельный поток",
-              cond=lambda: len(unknown_rules()) > 0, cooldown=1)
+              cond=lambda: len(unknown_rules()) > 0, cooldown=2)
     add_event("chat_hw", "evening", "ev_chat_hw", "Групповой чат: решённая домашка",
+              cond=lambda: len([h for h in known_todo() if not h["done"]]) > 0, weight=15)
+    ## В воскресенье днём тоже: перед понедельником чат оживает.
+    add_event("chat_hw", "sunday", "ev_chat_hw", "Групповой чат: решённая домашка",
               cond=lambda: len([h for h in known_todo() if not h["done"]]) > 0)
-    add_event("call_home", "evening", "ev_call_home", "Звонок из дома", cooldown=3)
-    add_event("call_home_m", "morning", "ev_call_home", "Звонок из дома", cooldown=3)
+    ## Мама звонит утром, вечером или в воскресенье днём — один id, общая пауза 4 дня.
+    add_event("call_home", "evening", "ev_call_home", "Звонок из дома", cooldown=4)
+    add_event("call_home", "morning", "ev_call_home", "Звонок из дома", cooldown=4)
+    add_event("call_home", "sunday", "ev_call_home", "Звонок из дома", cooldown=4)
     add_event("msg_2am", "night", "ev_msg_2am", "Сообщение в 2 ночи",
-              cond=lambda: any(met(p) for p in STUDENT_ORDER))
+              cond=lambda: any(met(p) for p in STUDENT_ORDER), cooldown=3)
     ## Директор не выпадает из пула: у него свой шанс 5% при прогуле.
     add_event("director", "never", "ev_director", "Директор в коридоре")
 
