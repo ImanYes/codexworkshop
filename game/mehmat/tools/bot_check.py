@@ -594,7 +594,7 @@ class Bot:
     }
 
     def pick(self, texts, where=""):
-        if "Что дальше?" in where:
+        if where == "Что дальше?":
             return None
         if self.style == "sensible":
             i = self.sensible(texts, where)
@@ -838,7 +838,8 @@ class Sim:
                     elif "Кто ты?" in capt and self.female is not None:
                         i = [k for k, (t, _) in enumerate(live) if t == ("Девушка" if self.female else "Парень")][0]
                     else:
-                        i = self.bot.pick([t for t, _ in live], capt)
+                        ## Подпись с подстановкой: иначе «[where_q]» не совпадёт с «Пары кончились. Куда?».
+                        i = self.bot.pick([t for t, _ in live], show_text(capt, self.scope()))
                     self.log.append((loc, live[i][0]))
                     pc = live[i][1]
                 elif op == "callscreen":
