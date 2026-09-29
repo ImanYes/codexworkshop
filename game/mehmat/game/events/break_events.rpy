@@ -117,7 +117,7 @@ label ev_offer_cig:
     menu:
         "Взять":
             $ has_smoking = True
-            $ smoking_day = day
+            $ smoking_day = abs_day
             $ rel(sm, +M)
             $ day_log.append("Навык: курение (курилка открыта).")
             "Ты кашляешь. [smname] смеётся. Теперь тебе есть дорога в курилку."
