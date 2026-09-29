@@ -4,8 +4,8 @@
 
 init python:
     def smokers_here():
-        pool = present if present else arrived
-        return [p for p in pool if smokes(p)]
+        """Курящие рядом: на перерыве — кто рядом, на прогуле — кто прогуливает с тобой."""
+        return [p for p in present if smokes(p)]
 
     add_event("last_bun", "break", "ev_last_bun", "Последняя булочка",
               cond=lambda: len(present) > 0)
@@ -14,8 +14,9 @@ init python:
     add_event("headman_money", "break", "ev_headman_money", "Староста собирает деньги",
               cond=lambda: "n6" in present, cooldown=4)
     add_event("rumor", "break", "ev_rumor", "Слух об отчислении", once=True)
+    ## Не once: отказался — объявление попадётся снова, пока нет работы.
     add_event("job_ad", "break", "ev_job_ad", "Объявление о подработке",
-              cond=lambda: not has_job, once=True)
+              cond=lambda: not has_job, cooldown=3)
     add_event("offer_cig", "break", "ev_offer_cig", "Угостили сигаретой",
               cond=lambda: not has_smoking and len(smokers_here()) > 0)
     add_event("offer_cig_skip", "skip", "ev_offer_cig", "Угостили сигаретой",
@@ -46,16 +47,18 @@ label ev_last_bun:
 label ev_lost_notes:
     $ nb = renpy.random.choice(present)
     $ nbname = who(nb)
+    $ nb_thought = sx(nb, "думал", "думала")
+    $ nb_lost = sx(nb, "потерял", "потеряла")
     "На подоконнике лежит чей-то конспект. Подписан: [nbname]."
     menu:
         "Вернуть хозяину":
             $ rel(nb, +S)
-            "[nbname] облегчённо выдыхает: «Я уже думал(а), всё, потерял(а)!»"
+            "[nbname] облегчённо выдыхает: «Я уже [nb_thought], всё, [nb_lost]!»"
         "Сначала сфоткать себе, потом вернуть":
             $ change("know", +S)
             if roll(30):
                 $ rel(nb, -S)
-                "[nbname] видит, как ты фоткаешь. «Мог(ла) бы и спросить»."
+                "[nbname] видит, как ты фоткаешь. «{g=Могла}Мог{/g} бы и спросить»."
             else:
                 $ rel(nb, +M)
                 "Никто не заметил. Конспект вернулся к хозяину."
@@ -99,7 +102,7 @@ label ev_job_ad:
         "Позвонить и устроиться":
             $ has_job = True
             $ job_rate = 4
-            $ day_log.append("Нашёл подработку: $4 за день.")
+            $ day_log.append(gf("Нашёл", "Нашла") + " подработку: $4 за день.")
             "Тебя берут. Выходить после пар, когда хочешь. Но пропуск — ставка ниже."
         "Пройти мимо":
             "Не сейчас."

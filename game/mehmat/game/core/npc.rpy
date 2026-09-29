@@ -34,6 +34,9 @@ define STUDENT_ORDER = ["n1", "n2", "n3", "n4", "n5", "n6"]
 ## Шанс прийти в универ за день.
 define ATTEND_CHANCE = {"всегда": 90, "часто": 70, "иногда": 45, "редко": 20}
 
+## Шанс, что пришедший прогуливает эту же пару вместе с тобой (компания для прогула).
+define SKIP_CHANCE = {"всегда": 5, "часто": 15, "иногда": 30, "редко": 50}
+
 ## Реплики для разговора «с выбором». Правильная — та, что под характер.
 define REPLY_TEXT = {
     "direct": "Сказать прямо, что думаешь",
@@ -79,6 +82,10 @@ init -5 python:
     def smokes(pid):
         return STUDENTS[pid]["smokes"]
 
+    def sx(pid, m, f):
+        """Слово в роде одногруппника: sx(pid, "думал", "думала")."""
+        return f if STUDENTS[pid]["sex"] == "ж" else m
+
     def say_as(pid, what):
         """Реплика одногруппника без отдельного объекта Character на каждого."""
         renpy.say(Character(STUDENTS[pid]["name"], color="#ffd27a"), what)
@@ -93,3 +100,20 @@ init python:
         for t in TEACHERS:
             rels[t] = 50
         rels["director"] = 50
+
+## После всех define (они выполняются на init 0).
+init 1 python:
+    ## Проверка при запуске: новый одногруппник с опечаткой в посещаемости или характере
+    ## иначе уронит игру посреди дня. Лучше сразу понятная ошибка.
+    for _pid, _d in STUDENTS.items():
+        if _d["attend"] not in ATTEND_CHANCE:
+            raise Exception("Одногруппник {}: посещаемость «{}» — нужно одно из: {}".format(
+                _pid, _d["attend"], ", ".join(ATTEND_CHANCE)))
+        if _d["style"] not in REPLY_TEXT:
+            raise Exception("Одногруппник {}: характер «{}» — нужно одно из: {}".format(
+                _pid, _d["style"], ", ".join(REPLY_TEXT)))
+        if _d["sex"] not in ("м", "ж"):
+            raise Exception("Одногруппник {}: пол «{}» — нужно «м» или «ж»".format(_pid, _d["sex"]))
+    for _pid in STUDENT_ORDER:
+        if _pid not in STUDENTS:
+            raise Exception("STUDENT_ORDER: нет одногруппника {} в STUDENTS".format(_pid))

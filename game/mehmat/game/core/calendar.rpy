@@ -1,11 +1,14 @@
 ## Календарь прототипа и расписание дня.
-## Прототип — одна неделя: 6 учебных дней (пн–сб), воскресенье пропускаем.
+## Неделя — 7 дней: пн–сб учёба, вс — выходной (core/sunday.rpy).
 
-define WEEKDAYS = ["понедельник", "вторник", "среда", "четверг", "пятница", "суббота"]
-define DAYS_IN_PROTOTYPE = 6
+define WEEKDAYS = ["понедельник", "вторник", "среда", "четверг", "пятница", "суббота", "воскресенье"]
+define WEEKDAYS_SHORT = ["пн", "вт", "ср", "чт", "пт", "сб", "вс"]
+define STUDY_DAYS = 6           # пн–сб
+define DAYS_IN_WEEK = 7
 
-default day = 1                 # 1..6
-default week = 1                # в прототипе всегда 1, но переключатель делает её неделей Грузина
+default day = 1                 # день недели: 1 = пн … 7 = вс
+default abs_day = 1             # сквозной номер дня с начала игры. Сроки домашек и паузы между ивентами — только по нему
+default week = 1
 default gruzin_week = False     # тестовый переключатель «эта неделя — неделя Грузина»
 
 ## Расписание на сегодня: список из 4 пар.
@@ -22,11 +25,19 @@ default wake_hour = 8
 init python:
 
     def weekday_name():
-        return WEEKDAYS[(day - 1) % 6]
+        return WEEKDAYS[(day - 1) % DAYS_IN_WEEK]
+
+    def weekday_short():
+        return WEEKDAYS_SHORT[(day - 1) % DAYS_IN_WEEK]
+
+    def is_sunday():
+        return day == DAYS_IN_WEEK
 
     def day_title():
         t = "Неделя {} · день {} · {}".format(week, day, weekday_name())
-        if gruzin_week:
+        if is_sunday():
+            t += " · выходной"
+        elif gruzin_week:
             t += " · неделя Грузина"
         return t
 
@@ -62,6 +73,11 @@ init python:
         global arrived
         arrived = [pid for pid in STUDENT_ORDER
                    if roll(ATTEND_CHANCE[STUDENTS[pid]["attend"]])]
+
+    def skip_company():
+        """Кто из пришедших прогуливает эту пару вместе с тобой."""
+        return [pid for pid in arrived
+                if roll(SKIP_CHANCE[STUDENTS[pid]["attend"]])]
 
     PAIR_TIME = ["8:30–9:50", "10:00–11:20", "12:10–13:30", "13:40–15:00"]
 

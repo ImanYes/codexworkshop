@@ -14,10 +14,6 @@ init python:
     ## Директор не выпадает из пула: у него свой шанс 5% при прогуле.
     add_event("director", "never", "ev_director", "Директор в коридоре")
 
-## После всех add_event (init 0 во всех файлах).
-init 1 python:
-    EVENT_BY_ID = {e.id: e for e in EVENTS}
-
 
 label ev_parallel:
     $ r = renpy.random.choice(unknown_rules())
@@ -27,7 +23,7 @@ label ev_parallel:
     "«[rule_text]»"
     "Ты запоминаешь. Досье пополнилось."
     $ change("fatigue", +M)
-    $ day_log.append("Узнал скрытое правило (см. профиль).")
+    $ day_log.append(gf("Узнал", "Узнала") + " скрытое правило (см. профиль).")
     return
 
 
@@ -40,7 +36,7 @@ label ev_chat_hw:
             $ h["done"] = True
             $ h["cheated"] = True
             "Пять минут — и готово. Вечер свободен… почти."
-        "Не надо, сделаю сам(а)":
+        "Не надо, сделаю {g=сама}сам{/g}":
             "Ты закрываешь чат."
     return
 

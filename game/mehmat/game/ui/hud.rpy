@@ -81,7 +81,7 @@ screen day_card():
         align (0.5, 0.45)
         spacing 20
         text day_title() size 60 color "#ffd27a" xalign 0.5
-        if gruzin_week:
+        if gruzin_week and not is_sunday():
             text "Все пары — Грузин, вживую." size 32 color "#ff9090" xalign 0.5
     key "dismiss" action Return()
     timer 2.5 action Return()
@@ -93,18 +93,21 @@ screen schedule_view(morning=False):
     modal True
     zorder 100
     use card("Расписание · " + weekday_name()):
-        for i, p in enumerate(schedule):
-            hbox:
-                spacing 20
-                text PAIR_TIME[i] style "card_small" min_width 200
-                text pair_label(p) style "card_text"
-                if p["status"]:
-                    text "— " + p["status"] style "card_small" color "#88c0d0"
+        if is_sunday():
+            text "Выходной — пар нет." style "card_text"
+        else:
+            for i, p in enumerate(schedule):
+                hbox:
+                    spacing 20
+                    text PAIR_TIME[i] style "card_small" min_width 200
+                    text pair_label(p) style "card_text"
+                    if p["status"]:
+                        text "— " + p["status"] style "card_small" color "#88c0d0"
         null height 16
         text "Домашки" style "card_title" size 36
         if hw_list():
             for h in hw_list():
-                text "• {} — до следующей пары по предмету{}".format(h["subj"], " (готово)" if h["done"] else "") style "card_text"
+                text "• {} — до следующей пары по предмету{}".format(hw_title(h), " (готово)" if h["done"] else "") style "card_text"
         else:
             text "нет" style "card_small"
         null height 16
@@ -118,7 +121,7 @@ screen schedule_view(morning=False):
 screen profile():
     modal True
     zorder 100
-    use card("Профиль"):
+    use card("Профиль · " + hero_name):
         text "Знания: {}/10".format(shown("know")) style "card_text"
         text "Харизма: {}/10  (итоговая {:.1f})".format(shown("cha"), total_cha()) style "card_text"
         text "Привлекательность: {}/10".format(shown("att")) style "card_text"
@@ -149,24 +152,35 @@ screen people():
     modal True
     zorder 100
     use card("Одногруппники", 1500):
-        grid 3 2:
+        ## Сетка по 3 в ряд с прокруткой: работает и для 6, и для 26 человек.
+        ## Пустые клетки добиваем null, чтобы последний ряд был полным.
+        $ cells = STUDENT_ORDER + [None] * (-len(STUDENT_ORDER) % 3)
+        vpgrid:
+            cols 3
             spacing 20
-            for pid in STUDENT_ORDER:
-                $ d = STUDENTS[pid]
-                frame:
-                    xsize 440
-                    background Solid("#2a303c")
-                    padding (20, 16)
-                    vbox:
-                        spacing 4
-                        text "№{} {}".format(d["num"], d["name"]) style "card_text" color "#ffd27a"
-                        text tier_name(pid) style "card_text"
-                        if met(pid):
-                            text d["hint"] style "card_small"
-                            text ("курит" if d["smokes"] else "не курит") + ", ходит " + d["attend"] style "card_small"
-                            text ("сегодня здесь" if pid in arrived else "сегодня нет") style "card_small"
-                        else:
-                            text "ещё не знакомы" style "card_small"
+            ysize 620
+            mousewheel True
+            draggable True
+            scrollbars "vertical"
+            for pid in cells:
+                if pid is None:
+                    null
+                else:
+                    $ d = STUDENTS[pid]
+                    frame:
+                        xsize 440
+                        background Solid("#2a303c")
+                        padding (20, 16)
+                        vbox:
+                            spacing 4
+                            text "№{} {}".format(d["num"], d["name"]) style "card_text" color "#ffd27a"
+                            text tier_name(pid) style "card_text"
+                            if met(pid):
+                                text d["hint"] style "card_small"
+                                text ("курит" if d["smokes"] else "не курит") + ", ходит " + d["attend"] style "card_small"
+                                text ("сегодня здесь" if pid in arrived else "сегодня нет") style "card_small"
+                            else:
+                                text "ещё не знакомы" style "card_small"
         null height 16
         text "Отношения с преподами скрыты." style "card_small"
         textbutton "Закрыть" action Hide("people") text_style "card_button_text"
@@ -213,13 +227,17 @@ screen week_summary():
         text "Знания {}/10 · Харизма {}/10 · Привлекательность {}/10".format(shown("know"), shown("cha"), shown("att")) style "card_text"
         text "Мораль {}/10 · Усталость {}/10 · Деньги ${}".format(shown("morale"), shown("fatigue"), money) style "card_text"
         text "Репутация: " + rep_words() style "card_text"
-        for pid in STUDENT_ORDER:
-            text "{}: {}".format(who(pid), tier_name(pid)) style "card_small"
+        ## Одной строкой с переносом — влезет и при 26 одногруппниках.
+        $ met_list = [p for p in STUDENT_ORDER if met(p)]
+        if met_list:
+            text " · ".join("{} — {}".format(who(p), tier_name(p)) for p in met_list) style "card_small"
+        else:
+            text "Пока ни с кем не {g=познакомилась}познакомился{/g}." style "card_small"
         text "Линия №1: шаг {} из 3".format(n1_step) style "card_small"
         null height 10
         text "Скрыто от игрока (для теста баланса):" style "card_small" color "#ff9090"
         text "Преподы: " + ", ".join("{} {}".format(who(t), rels[t] // 10) for t in TEACHERS) style "card_small"
-        text "Сложность экзамена у Грузина: +{}".format(exam_diff.get("gruzin", 0)) style "card_small"
+        text "Экзамен Грузина: {} (пропущено семинаров вживую: {})".format(exam_words("gruzin"), exam_diff.get("gruzin", 0)) style "card_small"
         null height 16
         textbutton "Дальше" action Return() text_style "card_button_text"
 
