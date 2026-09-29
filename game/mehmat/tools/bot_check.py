@@ -11,7 +11,12 @@
 
 Запуск (из папки game/mehmat):
     python3 tools/bot_check.py
-Настройки через переменные окружения: RUNS=200 WEEKS=4 FEMALE=1 (только героиня) VERBOSE=1.
+Настройки через переменные окружения:
+    RUNS=200 WEEKS=4 FEMALE=1 (только героиня) VERBOSE=1
+    STYLE=sensible            стили через запятую: random, diligent, skipper, social, sensible
+    ACT=о,г,о                 порядок недель как в акте: о — обычная, г — неделя Грузина
+    METRICS=out.jsonl         снимок каждого дня (статы, деньги, отношения, ивенты…) для разбора баланса
+    OVERRIDE=ZERO_MORALE_LEAVE=10   подменить define/переменную для эксперимента
 Настоящую проверку Ren'Py (`renpy . lint`) это не заменяет — только дополняет.
 """
 import os, re, sys, types, pickle, random, string, textwrap, traceback, collections
@@ -591,6 +596,11 @@ class Bot:
     def pick(self, texts, where=""):
         if "Что дальше?" in where:
             return None
+        if self.style == "sensible":
+            i = self.sensible(texts, where)
+            if i is not None:
+                return i
+            return self.rng.randrange(len(texts))
         pref = self.PREFER.get(self.style, [])
         if pref and self.rng.random() < 0.8:
             for p in pref:
@@ -598,6 +608,74 @@ class Bot:
                     if t.startswith(p) or ("«" + p) in t:
                         return i
         return self.rng.randrange(len(texts))
+
+
+    def find(self, texts, *prefixes):
+        for p in prefixes:
+            for i, t in enumerate(texts):
+                if t.startswith(p):
+                    return i
+        return None
+
+    def sensible(self, texts, cap):
+        """Разумный игрок: смотрит на мораль, усталость и деньги, как живой человек."""
+        st, r = S["stats"], self.rng.random()
+        mor, fat, money = st["morale"], st["fatigue"], S["money"]
+        f = lambda *p: self.find(texts, *p)
+        if cap.startswith("Пара "):
+            if fat >= 85 and r < 0.5:
+                return f("Прогулять")
+            if f("Зайти и заниматься своим") is not None and r < 0.3:
+                return f("Зайти и заниматься своим")
+            return f("Пойти")
+        if f("Встать") is not None:
+            return f("Поспать ещё") if fat >= 80 else f("Встать")
+        if f("Слушать") is not None:
+            return f("Поспать") if fat >= 60 else f("Слушать")
+        if cap.startswith("Куда пойти?"):
+            return f("В столовую")
+        if cap.startswith("Что делать?"):
+            if mor < 30 and money >= 1 and r < 0.5:
+                return f("Буфет")
+            if f("Поговорить") is not None and r < 0.75:
+                return f("Поговорить")
+            return f("Отдохнуть")
+        if cap.startswith("Буфет"):
+            if mor < 40:
+                return f("Булочка")
+            if fat > 70:
+                return f("Энергетик")
+            return f("Ничего")
+        if cap in ("Пары кончились. Куда?", "Ты уже дома. Что дальше?"):
+            if f("На работу") is not None and (money < 12 or r < 0.5):
+                return f("На работу")
+            if f("В качалку") is not None and fat < 60:
+                return f("В качалку")
+            if f("Купить абонемент") is not None:
+                return f("Купить абонемент")
+            return 0
+        if cap.startswith("Вечер."):
+            if f("Телефон") is not None and r < 0.4:
+                return f("Телефон")
+            if mor < 35:
+                i = f("Позвать")
+                return i if i is not None else f("Поиграть")
+            if fat >= 75:
+                return f("Лечь пораньше")
+            if f("Сделать домашку") is not None:
+                return f("Сделать домашку")
+            return f("Учиться самому") if r < 0.5 else f("Поиграть")
+        if cap.startswith("Воскресенье, день"):
+            if f("Сделать домашку") is not None and mor >= 35:
+                return f("Сделать домашку")
+            if mor < 50:
+                opts = [i for i in (f("Позвать"), f("Погулять"), f("Поиграть")) if i is not None]
+                return self.rng.choice(opts)
+            if fat >= 70:
+                return f("Валяться дома")
+            opts = [i for i in (f("Учиться самому"), f("Погулять"), f("В качалку"), f("Смена")) if i is not None]
+            return self.rng.choice(opts)
+        return None
 
 
 class Sim:
@@ -611,6 +689,8 @@ class Sim:
         self.hud = False
         self.female = female
         self.log = []
+        self.days = []
+        self.act = [w.strip() for w in os.environ.get("ACT", "").split(",") if w.strip()]
 
     # --- save check
     def check_save(self, where):
@@ -651,10 +731,43 @@ class Sim:
         if not live:
             raise SimError("display_menu без вариантов")
         self.after_interaction("display_menu")
+        vals = [v for t, v in live]
+        if self.bot.style in ("sensible", "social") and self.bot.rng.random() < 0.7:
+            good = S.get("good")
+            if good in vals and set(vals) <= set(S["REPLY_TEXT"]):
+                return good
+            q = S.get("q")
+            if q and q[1][0] in vals:
+                return q[1][0]
+        if self.bot.style == "sensible":
+            names = [t for t, v in live]
+            k = self.bot.find(names, "Передумать", "Просто покурить", "Убрать")
+            if k is not None and len(live) > 1:
+                live = [x for j, x in enumerate(live) if j != k]
         i = self.bot.pick([t for t, v in live])
         return live[i][1]
 
+    def snapshot(self):
+        st = S["stats"]
+        log = S.get("day_log", [])
+        self.days.append(dict(
+            abs_day=S.get("abs_day"), week=S.get("week"), day=S.get("day"), gruzin=S.get("gruzin_week"),
+            stats={k: round(v, 1) for k, v in st.items()}, money=S.get("money"),
+            rels={p: S["rels"].get(p, 0) for p in S["STUDENT_ORDER"]},
+            teachers={t: S["rels"].get(t, 0) for t in S["TEACHERS"]},
+            n1_step=S.get("n1_step"), events=S.get("events_today"),
+            zero_days=S.get("zero_morale_days"), job=S.get("has_job"), job_rate=S.get("job_rate"),
+            gym=S.get("gym_pass"), smoking=S.get("has_smoking"),
+            overslept=any(x.startswith(("Проспал", "Проспала")) for x in log),
+            hw_ok=sum(1 for x in log if x.startswith(("Сдал ", "Сдала "))),
+            hw_fail=sum(1 for x in log if x.startswith(("Не сдал", "Не сдала", "Не знал", "Не знала"))),
+            hw_given=sum(1 for x in log if x.startswith("Задали домашку")),
+            skips=sum(1 for p in S.get("schedule", []) if p.get("status") == "прогул") if not S["is_sunday"]() else 0,
+        ))
+
     def call_screen(self, name, args, kwargs):
+        if name == "day_summary":
+            self.snapshot()
         run_screen(name, args, kwargs)
         self.after_interaction("screen " + name)
         if name == "phone":
@@ -703,7 +816,18 @@ class Sim:
                     if not live:
                         raise SimError("%s: меню без доступных пунктов" % loc)
                     capt = cap[1] if cap else ""
-                    if "Что дальше?" in capt:
+                    if self.act and ("Что дальше?" in capt or "Какую неделю" in capt):
+                        n = weeks_done if "Какую неделю" in capt else weeks_done + 1
+                        if "Что дальше?" in capt:
+                            weeks_done += 1
+                        if n >= len(self.act):
+                            want = "В главное меню"
+                        elif "Какую неделю" in capt:
+                            want = "Неделя Грузина" if self.act[n].startswith("г") else "Обычная"
+                        else:
+                            want = "Прожить ещё неделю (неделя Грузина)" if self.act[n].startswith("г") else "Прожить ещё неделю (обычную)"
+                        i = [k for k, (t, _) in enumerate(live) if t.startswith(want)][0]
+                    elif "Что дальше?" in capt:
                         want = "Прожить ещё неделю" if weeks_done + 1 < self.weeks else "В главное меню"
                         if self.bot.rng.random() < 0.3:
                             want = "Экзамен Грузина"
@@ -781,9 +905,12 @@ if __name__ == "__main__":
     INIT_COPY = {k: copy.deepcopy(v) for k, v in S.items()
                  if isinstance(v, (dict, list, set)) and k not in ("__builtins__",)}
     MARKS = [0]
+    EVCOUNT = collections.Counter()
+    metrics = []
     _orig_mark = S["mark_event"]
     def _mark(eid):
         MARKS[0] += 1
+        EVCOUNT[eid] += 1
         return _orig_mark(eid)
     S["mark_event"] = _mark
     INIT_STATE["mark_event"] = _mark
@@ -796,14 +923,21 @@ if __name__ == "__main__":
         fresh_store()
         for k, v in INIT_COPY.items():
             S[k] = copy.deepcopy(v)
-        style = ["random", "diligent", "skipper", "social"][r % 4]
+        styles = os.environ.get("STYLE", "random,diligent,skipper,social,sensible").split(",")
+        style = styles[r % len(styles)]
         fem = {"1": True, "0": False}.get(os.environ.get("FEMALE", ""), r % 2 == 1)
         sim = Sim(1000 + r, style, weeks, female=fem)
         MARKS[0] = 0
+        EVCOUNT.clear()
         try:
             wd = sim.run()
             stats_out.append((style, S.get("abs_day", S["day"]), S.get("gave_up"), {k: int(v) for k, v in S["stats"].items()},
                               S["money"], MARKS[0], S["n1_step"]))
+            if os.environ.get("METRICS"):
+                sim.snapshot()
+                metrics.append(dict(run=r, style=style, seed=1000 + r, female=fem, gave_up=bool(S.get("gave_up")),
+                                    exam_level=S["exam_level"]("gruzin"), exam_diff=S["exam_diff"].get("gruzin", 0),
+                                    events=dict(EVCOUNT), days=sim.days))
         except SimError as e:
             fails += 1
             print("RUN %d (%s, seed %d) FAIL: %s" % (r, style, 1000 + r, e))
@@ -823,6 +957,12 @@ if __name__ == "__main__":
     if os.environ.get("VERBOSE"):
         for s in stats_out[:12]:
             print("  ", s)
+    if os.environ.get("METRICS"):
+        import json
+        with open(os.environ["METRICS"], "w", encoding="utf8") as f:
+            for m in metrics:
+                f.write(json.dumps(m, ensure_ascii=False) + "\n")
+        print("метрики по дням: %s (%d прогонов)" % (os.environ["METRICS"], len(metrics)))
     if os.environ.get("DUMP"):
         with open(os.environ["DUMP"], "w", encoding="utf8") as f:
             for t, c in sorted(texts.items()):
