@@ -733,8 +733,9 @@ class Sim:
         self.after_interaction("display_menu")
         vals = [v for t, v in live]
         if self.bot.style in ("sensible", "social") and self.bot.rng.random() < 0.7:
-            good = S.get("good")
-            if good in vals and set(vals) <= set(S["REPLY_TEXT"]):
+            ## Разговор (core/dialogue.rpy): «хороший» ответ под характер.
+            good = S.get("dlg_good")
+            if S.get("dlg_menu") and good in vals:
                 return good
             q = S.get("q")
             if q and q[1][0] in vals:

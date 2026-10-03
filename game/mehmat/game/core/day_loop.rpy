@@ -16,7 +16,6 @@ default heard_anecdotes = []        # анекдоты в этом прохож�
 
 ## Счётчики дня.
 default talks_today = {}
-default talk_counter = 0            # каждый 3-й разговор — выбор реплики
 default energy_drink = 0            # сколько энергетиков выпито сегодня
 default went_home = False
 default worked = False
@@ -456,43 +455,17 @@ label talk_menu(big):
 
 label talk(pid, big=False):
     $ renpy.show("plate " + pid)
-    $ nm = who(pid)
-    $ nhint = STUDENTS[pid]["hint"]
     $ talks_today[pid] = talks_today.get(pid, 0) + 1
 
     ## Созрел шаг линии — он вместо обычного разговора.
     if line_ripe(pid):
         $ line_steps_today += 1
         call expression "line_" + pid + "_step"
-        $ renpy.hide("plate")
-        return
-
-    if not met(pid):
-        $ meet(pid)
-        "Новое знакомство: [nm]. Характер: [nhint]."
-        $ renpy.hide("plate")
-        return
-
-    $ talk_counter += 1
-    if talk_counter % 3 == 0:
-        ## Выбор реплики: под характер → удача.
-        $ good = STUDENTS[pid]["style"]
-        $ other = renpy.random.sample([s for s in REPLY_TEXT if s != good], 2)
-        $ opts = [good] + other
-        $ renpy.random.shuffle(opts)
-        "[nm] ([nhint]) ждёт, что ты скажешь."
-        $ pick = renpy.display_menu([(REPLY_TEXT[o], o) for o in opts])
-        $ ok = (pick == good)
+    elif not met(pid):
+        call dlg_intro(pid, big)
     else:
-        $ ok = roll(talk_chance(pid))
-
-    if ok:
-        ## С другом и близким большой перерыв даёт М, а не С (TALK_S_BELOW_TIER, core/stats.rpy).
-        $ rel(pid, +S if big and tier(pid) < TALK_S_BELOW_TIER else +M)
-        "Разговор клеится. [nm] улыбается."
-    else:
-        $ rel(pid, -M)
-        "Разговор не клеится. Неловкая пауза."
+        ## Тема → реплика → ответ (core/dialogue.rpy, тексты — game/dialogues/).
+        call dlg_talk(pid, big)
     $ renpy.hide("plate")
     return
 
@@ -704,7 +677,7 @@ label meeting(can_meet):
     $ change("morale", +S, boredom_factor("meet"))
     $ did_activity("meet")
     $ change("fatigue", +M)
-    "[nm] соглашается. Вы сидите в кафе и болтаете обо всём."
+    $ dlg_line(pid, "* " + dlg(pid)["date"])
     $ renpy.hide("plate")
     return "ok"
 
@@ -721,10 +694,10 @@ label phone_evening:
     $ nm = who(pid)
     if roll(talk_chance(pid)):
         $ rel(pid, +M)
-        "[nm] отвечает сразу. Переписываетесь полчаса."
+        $ dlg_phone(pid, True)
     else:
         $ change("morale", -M)
-        "[nm]: «ок». И всё."
+        $ dlg_phone(pid, False)
     return
 
 

@@ -15,7 +15,7 @@ init python:
               cond=lambda: len(present) > 0, cooldown=4)
     add_event("lost_notes", "break", "ev_lost_notes", "Забытый конспект",
               cond=lambda: len(present) > 0, cooldown=4)
-    ## Староста обходит всю группу — ей не нужно стоять рядом, достаточно прийти.
+    ## Карина (n6) собирает деньги за всю группу — ей не нужно стоять рядом, достаточно прийти.
     ## Сбор не чаще раза в 10 дней: денег всего $1 в неделю.
     add_event("headman_money", "break", "ev_headman_money", "Староста собирает деньги",
               cond=lambda: "n6" in arrived, cooldown=10)
@@ -83,7 +83,7 @@ label ev_lost_notes:
 label ev_headman_money:
     $ renpy.show("plate n6")
     $ hname = who("n6")
-    "[hname] (староста) обходит группу: «Скидываемся по доллару на подарок куратору»."
+    "[hname] обходит группу со списком: «Скидываемся по доллару на подарок куратору. Я записываю, кто сдал»."
     menu:
         "Скинуться ($1)" if money >= 1:
             $ money_add(-1)

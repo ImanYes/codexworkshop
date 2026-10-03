@@ -179,6 +179,8 @@ screen people():
                                 text d["hint"] style "card_small"
                                 text ("курит" if d["smokes"] else "не курит") + ", ходит " + d["attend"] style "card_small"
                                 text ("сегодня здесь" if pid in arrived else "сегодня нет") style "card_small"
+                                for f in dlg_facts.get(pid, []):
+                                    text "• " + f style "card_small"
                             else:
                                 text "ещё не знакомы" style "card_small"
         null height 16
