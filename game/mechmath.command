@@ -5,7 +5,7 @@
 # (~/Library/RenPy/), обновление игры их не стирает.
 
 REPO="ImanYes/codexworkshop"
-BRANCH="${MECHMATH_BRANCH:-claude/game-context-hz7um9}"
+BRANCH="${MECHMATH_BRANCH:-claude/quirky-knuth-fmz9wh}"
 BASE="$HOME/.mechmath"
 GAME="$BASE/game"
 SDK="$BASE/renpy-sdk"
